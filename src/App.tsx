@@ -1,16 +1,18 @@
-import { Button } from "./components/ui/button";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
 
-function App() {
-  return (
-    <>
-      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-        <div className="max-w-5xl mx-auto">
-          <h1>Welcome to the Starter kit</h1>
-          <Button>Start</Button>
-        </div>
-      </div>
-    </>
-  );
+// Import the generated route tree
+import { routeTree } from "./routeTree.gen";
+
+// Create a new router instance
+const router = createRouter({ routeTree });
+
+// Register the router instance for type safety
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
 }
 
-export default App;
+export default function App() {
+  return <RouterProvider router={router} />;
+}
