@@ -1,6 +1,9 @@
+import { useCreateUser } from '@/api/hooks/hook'
 import FormRegister from '@/components/form'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useNavigate, useRouter, useRouterState } from '@tanstack/react-router'
 import { createFileRoute } from '@tanstack/react-router'
+import toast from 'react-hot-toast'
 
 export const Route = createFileRoute('/(auth)/sign-up/')({
   component: RouteComponent,
@@ -15,14 +18,27 @@ type UserData = {
 
 function RouteComponent() {
 
+  const { mutate, data: detail, isPending, isError, error, isSuccess } = useCreateUser()
 
-  const createUser = async (data: UserData) => {
-    setTimeout(() => console.log("D", data)
-      , 3000)
+  const router = useRouter()
+  const creatUser = async (data: UserData) => {
+    console.log("doo", data)
+    mutate(data)
+  }
+  if (isError) {
+    toast.error(error?.message)
+  }
+  if (isSuccess) {
+    router.navigate({ to: "/sign-in" })
+  }
+
+
+  if (detail) {
+    toast.success((detail.message))
   }
   return (
     <>
-      <div className='min-h-screen py-12 px-4 sm:px-6 lg:px-8'>
+      <div className='min-h-screen py-8 px-4 sm:px-6 lg:px-8'>
 
         <div className='max-w-6xl mx-auto'>
           <div className='max-w-lg mx-auto'>
@@ -35,7 +51,7 @@ function RouteComponent() {
                 </CardTitle>
               </CardHeader>
               <CardContent className='py-4'>
-                <FormRegister onCreate={createUser} />
+                <FormRegister loading={isPending} onCreate={creatUser} />
               </CardContent>
             </Card>
           </div>

@@ -17,7 +17,7 @@ const formSchema = z.object({
 
 
 
-export default function FormRegister({ onCreate }: { onCreate: (data: z.infer<typeof formSchema>) => void }) {
+export default function FormRegister({ onCreate, loading }: { loading: boolean, onCreate: (data: z.infer<typeof formSchema>) => void }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -80,7 +80,7 @@ export default function FormRegister({ onCreate }: { onCreate: (data: z.infer<ty
               </FormItem>
             )}
           />
-          <Button size={"lg"} className={`w-full bg-purple-500 hover:bg-purple-600 transition-all ease-in-out`}>Sign Up</Button>
+          <Button disabled={loading} size={"lg"} className={`w-full bg-purple-500 hover:bg-purple-600 transition-all ease-in-out`}> {loading ? "Creating..." : "Sign Up"} </Button>
         </form>
 
         <div className="my-4">
