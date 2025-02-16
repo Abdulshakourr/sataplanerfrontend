@@ -8,19 +8,38 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as isAuthenticatedAuthImport } from './routes/(isAuthenticated)/_auth'
 import { Route as authSignUpIndexImport } from './routes/(auth)/sign-up/index'
 import { Route as authSignInIndexImport } from './routes/(auth)/sign-in/index'
+import { Route as isAuthenticatedAuthDashboardIndexImport } from './routes/(isAuthenticated)/_auth/dashboard/index'
+import { Route as isAuthenticatedAuthDashboardPlanPlanIdImport } from './routes/(isAuthenticated)/_auth/dashboard/plan/$planId'
+
+// Create Virtual Routes
+
+const isAuthenticatedImport = createFileRoute('/(isAuthenticated)')()
 
 // Create/Update Routes
+
+const isAuthenticatedRoute = isAuthenticatedImport.update({
+  id: '/(isAuthenticated)',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const isAuthenticatedAuthRoute = isAuthenticatedAuthImport.update({
+  id: '/_auth',
+  getParentRoute: () => isAuthenticatedRoute,
 } as any)
 
 const authSignUpIndexRoute = authSignUpIndexImport.update({
@@ -35,6 +54,20 @@ const authSignInIndexRoute = authSignInIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const isAuthenticatedAuthDashboardIndexRoute =
+  isAuthenticatedAuthDashboardIndexImport.update({
+    id: '/dashboard/',
+    path: '/dashboard/',
+    getParentRoute: () => isAuthenticatedAuthRoute,
+  } as any)
+
+const isAuthenticatedAuthDashboardPlanPlanIdRoute =
+  isAuthenticatedAuthDashboardPlanPlanIdImport.update({
+    id: '/dashboard/plan/$planId',
+    path: '/dashboard/plan/$planId',
+    getParentRoute: () => isAuthenticatedAuthRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -45,6 +78,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
+    }
+    '/(isAuthenticated)': {
+      id: '/(isAuthenticated)'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof isAuthenticatedImport
+      parentRoute: typeof rootRoute
+    }
+    '/(isAuthenticated)/_auth': {
+      id: '/(isAuthenticated)/_auth'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof isAuthenticatedAuthImport
+      parentRoute: typeof isAuthenticatedRoute
     }
     '/(auth)/sign-in/': {
       id: '/(auth)/sign-in/'
@@ -60,47 +107,111 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authSignUpIndexImport
       parentRoute: typeof rootRoute
     }
+    '/(isAuthenticated)/_auth/dashboard/': {
+      id: '/(isAuthenticated)/_auth/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof isAuthenticatedAuthDashboardIndexImport
+      parentRoute: typeof isAuthenticatedAuthImport
+    }
+    '/(isAuthenticated)/_auth/dashboard/plan/$planId': {
+      id: '/(isAuthenticated)/_auth/dashboard/plan/$planId'
+      path: '/dashboard/plan/$planId'
+      fullPath: '/dashboard/plan/$planId'
+      preLoaderRoute: typeof isAuthenticatedAuthDashboardPlanPlanIdImport
+      parentRoute: typeof isAuthenticatedAuthImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface isAuthenticatedAuthRouteChildren {
+  isAuthenticatedAuthDashboardIndexRoute: typeof isAuthenticatedAuthDashboardIndexRoute
+  isAuthenticatedAuthDashboardPlanPlanIdRoute: typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
+}
+
+const isAuthenticatedAuthRouteChildren: isAuthenticatedAuthRouteChildren = {
+  isAuthenticatedAuthDashboardIndexRoute:
+    isAuthenticatedAuthDashboardIndexRoute,
+  isAuthenticatedAuthDashboardPlanPlanIdRoute:
+    isAuthenticatedAuthDashboardPlanPlanIdRoute,
+}
+
+const isAuthenticatedAuthRouteWithChildren =
+  isAuthenticatedAuthRoute._addFileChildren(isAuthenticatedAuthRouteChildren)
+
+interface isAuthenticatedRouteChildren {
+  isAuthenticatedAuthRoute: typeof isAuthenticatedAuthRouteWithChildren
+}
+
+const isAuthenticatedRouteChildren: isAuthenticatedRouteChildren = {
+  isAuthenticatedAuthRoute: isAuthenticatedAuthRouteWithChildren,
+}
+
+const isAuthenticatedRouteWithChildren = isAuthenticatedRoute._addFileChildren(
+  isAuthenticatedRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof isAuthenticatedAuthRouteWithChildren
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
+  '/dashboard': typeof isAuthenticatedAuthDashboardIndexRoute
+  '/dashboard/plan/$planId': typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/': typeof isAuthenticatedAuthRouteWithChildren
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
+  '/dashboard': typeof isAuthenticatedAuthDashboardIndexRoute
+  '/dashboard/plan/$planId': typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/(isAuthenticated)': typeof isAuthenticatedRouteWithChildren
+  '/(isAuthenticated)/_auth': typeof isAuthenticatedAuthRouteWithChildren
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/(auth)/sign-up/': typeof authSignUpIndexRoute
+  '/(isAuthenticated)/_auth/dashboard/': typeof isAuthenticatedAuthDashboardIndexRoute
+  '/(isAuthenticated)/_auth/dashboard/plan/$planId': typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in' | '/sign-up'
+  fullPaths:
+    | '/'
+    | '/sign-in'
+    | '/sign-up'
+    | '/dashboard'
+    | '/dashboard/plan/$planId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sign-in' | '/sign-up'
-  id: '__root__' | '/' | '/(auth)/sign-in/' | '/(auth)/sign-up/'
+  to: '/' | '/sign-in' | '/sign-up' | '/dashboard' | '/dashboard/plan/$planId'
+  id:
+    | '__root__'
+    | '/'
+    | '/(isAuthenticated)'
+    | '/(isAuthenticated)/_auth'
+    | '/(auth)/sign-in/'
+    | '/(auth)/sign-up/'
+    | '/(isAuthenticated)/_auth/dashboard/'
+    | '/(isAuthenticated)/_auth/dashboard/plan/$planId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  isAuthenticatedRoute: typeof isAuthenticatedRouteWithChildren
   authSignInIndexRoute: typeof authSignInIndexRoute
   authSignUpIndexRoute: typeof authSignUpIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  isAuthenticatedRoute: isAuthenticatedRouteWithChildren,
   authSignInIndexRoute: authSignInIndexRoute,
   authSignUpIndexRoute: authSignUpIndexRoute,
 }
@@ -116,6 +227,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/(isAuthenticated)",
         "/(auth)/sign-in/",
         "/(auth)/sign-up/"
       ]
@@ -123,11 +235,33 @@ export const routeTree = rootRoute
     "/": {
       "filePath": "index.tsx"
     },
+    "/(isAuthenticated)": {
+      "filePath": "(isAuthenticated)",
+      "children": [
+        "/(isAuthenticated)/_auth"
+      ]
+    },
+    "/(isAuthenticated)/_auth": {
+      "filePath": "(isAuthenticated)/_auth.tsx",
+      "parent": "/(isAuthenticated)",
+      "children": [
+        "/(isAuthenticated)/_auth/dashboard/",
+        "/(isAuthenticated)/_auth/dashboard/plan/$planId"
+      ]
+    },
     "/(auth)/sign-in/": {
       "filePath": "(auth)/sign-in/index.tsx"
     },
     "/(auth)/sign-up/": {
       "filePath": "(auth)/sign-up/index.tsx"
+    },
+    "/(isAuthenticated)/_auth/dashboard/": {
+      "filePath": "(isAuthenticated)/_auth/dashboard/index.tsx",
+      "parent": "/(isAuthenticated)/_auth"
+    },
+    "/(isAuthenticated)/_auth/dashboard/plan/$planId": {
+      "filePath": "(isAuthenticated)/_auth/dashboard/plan/$planId.tsx",
+      "parent": "/(isAuthenticated)/_auth"
     }
   }
 }

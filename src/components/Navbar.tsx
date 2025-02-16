@@ -2,13 +2,6 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Link } from "@tanstack/react-router";
 
-
-
-
-
-
-
-
 export default function Navbar() {
 
   const [scrolled, setScrolled] = useState(false)
@@ -16,10 +9,6 @@ export default function Navbar() {
 
 
   useEffect(() => {
-    // const d = window.addEventListener("scroll", () => {
-    //   console.log("sc", window.scrollY)
-    // })
-
     const handleScroll = () => {
       const isScrolled = window.scrollY > 20
       if (isScrolled !== scrolled) {
