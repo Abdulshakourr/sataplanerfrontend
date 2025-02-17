@@ -17,7 +17,7 @@ const formSchema = z.object({
 
 
 
-export default function FormLogin({ onLogin }: { onLogin: (data: z.infer<typeof formSchema>) => void }) {
+export default function FormLogin({ onLogin, loading }: { loading: boolean, onLogin: (data: z.infer<typeof formSchema>) => void }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -73,13 +73,17 @@ export default function FormLogin({ onLogin }: { onLogin: (data: z.infer<typeof 
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input placeholder="******" {...field} />
+                  <Input placeholder="******" type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button size={"lg"} className={`w-full bg-purple-500 hover:bg-purple-600 transition-all ease-in-out`}>Sign In</Button>
+          <Button disabled={loading} size={"lg"} className={`w-full bg-purple-500 hover:bg-purple-600 transition-all ease-in-out`}>
+            {
+              loading ? "Sign-in..." : "Sign In"
+            }
+          </Button>
         </form>
 
         <div className="my-4">

@@ -1,3 +1,4 @@
+import { userDataInstance } from "./axiosInstance";
 
 
 
@@ -63,12 +64,23 @@ export const client = {
     const data = await response.json()
 
     return data
-  }
-
-
-
-
-
+  },
 
   //end of user
+
+  // CreatePlan
+
+  async getPlan() {
+    try {
+      const response = await userDataInstance.get("/plans/allplans")
+      return response.data
+    } catch (error) {
+      if (error) {
+        console.log("Err", error)
+        console.log("eerrData", error.response.data)
+        throw new Error(error.response.data.detail)
+      }
+    }
+  }
+
 };
