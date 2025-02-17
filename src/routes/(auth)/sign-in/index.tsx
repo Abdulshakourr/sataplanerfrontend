@@ -1,7 +1,9 @@
 import { useLogin } from '@/api/hooks/hook'
 import FormLogin from '@/components/signInForm'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { createFileRoute, useRouter, useSearch } from '@tanstack/react-router'
+import { useAuthStore } from '@/store/auth'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 
 export const Route = createFileRoute('/(auth)/sign-in/')({
@@ -14,6 +16,7 @@ type userLogin = {
 }
 
 
+
 function RouteComponent() {
 
   const { mutate, data: detail, isPending, isError, error, isSuccess } = useLogin()
@@ -22,17 +25,21 @@ function RouteComponent() {
     mutate(data)
   }
   const router = useRouter()
-  const search = Route.useSearch()
+  const { setToken } = useAuthStore()
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log(detail)
+      const { access_token, refresh_token } = detail
+      setToken(access_token, refresh_token)
+      router.navigate({ to: "/dashboard" })
+    }
+  }, [isSuccess])
+
+
   if (isError) {
     toast.error(error?.message)
   }
-  if (isSuccess) {
-    toast.success("welcome back!")
-    console.log("d", detail)
-    router.navigate(({ to: "/dashboard" }))
-    // router.history.push(search.redirect)
-  }
-
 
 
 

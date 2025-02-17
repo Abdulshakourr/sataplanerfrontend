@@ -1,5 +1,5 @@
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client/client";
 
 
@@ -25,6 +25,12 @@ export const useCreateUser = () => useMutation({
 export const useLogin = () => useMutation({
   mutationFn: (userInfo: userData) => client.userLogin(userInfo)
 })
-
-
 //end
+//
+
+//getting and creating userData hooks
+
+export const useUserPlans = () => useQuery({
+  queryKey: ["plans"],
+  queryFn: client.getPlan
+})
