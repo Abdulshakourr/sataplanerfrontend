@@ -1,6 +1,7 @@
 import { useLogin } from '@/api/hooks/hook'
 import FormLogin from '@/components/signInForm'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import expireDate from '@/lib/expireDate'
 import { useAuthStore } from '@/store/auth'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useEffect } from 'react'
@@ -26,12 +27,12 @@ function RouteComponent() {
   }
   const router = useRouter()
   const { setToken } = useAuthStore()
-
+  const expire = expireDate(new Date)
   useEffect(() => {
     if (isSuccess) {
       console.log(detail)
       const { access_token, refresh_token } = detail
-      setToken(access_token, refresh_token)
+      setToken(access_token, refresh_token, expire)
       router.navigate({ to: "/dashboard" })
     }
   }, [isSuccess])

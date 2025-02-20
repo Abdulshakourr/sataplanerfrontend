@@ -6,7 +6,8 @@ type authState = {
   access_token: string | null,
   refresh_token: string | null
   isAuthenticated: boolean
-  setToken: (token: string, refresh: string) => void
+  expireTime: Date | null
+  setToken: (token: string, refresh: string, expires: Date) => void
   SignOut: () => void
   updateToken: (token: string) => void
 }
@@ -32,11 +33,12 @@ export const useAuthStore = create<authState>()(
       access_token: null,
       refresh_token: null,
       isAuthenticated: false,
-      setToken: (token, refresh) => {
-        set({ access_token: token, refresh_token: refresh, isAuthenticated: true })
+      expireTime: null,
+      setToken: (token, refresh, expires) => {
+        set({ access_token: token, refresh_token: refresh, isAuthenticated: true, expireTime: expires })
       },
       SignOut: () => {
-        set({ access_token: null, refresh_token: null, isAuthenticated: false })
+        set({ access_token: null, refresh_token: null, isAuthenticated: false, expireTime: null })
       },
       updateToken: (token) => {
         set({ access_token: token })
