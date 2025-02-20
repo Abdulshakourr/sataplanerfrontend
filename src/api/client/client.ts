@@ -13,6 +13,12 @@ type usercreate = {
 }
 
 
+type plan = {
+  name: string,
+  description: string
+}
+
+
 console.log(BaseUrl)
 export const client = {
   async getExample() {
@@ -76,10 +82,21 @@ export const client = {
       return response.data
     } catch (error) {
       if (error) {
-        console.log("Err", error)
-        console.log("eerrData", error.response.data)
+        // console.log("Err", error)
+        // console.log("eerrData", error.response.data)
         throw new Error(error.response.data.detail)
       }
+    }
+  },
+
+  async createPlan(plan: plan) {
+    try {
+      const response = await userDataInstance.post("/plans/add", plan)
+      console.log("YYYY", response)
+      return response.data
+    } catch (error) {
+      console.log("EEEEEEE", error)
+      throw new Error(error.response.data.detail)
     }
   }
 

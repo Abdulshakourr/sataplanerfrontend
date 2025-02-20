@@ -15,7 +15,10 @@ type userData = {
   email: string,
   password: string
 }
-
+type plan = {
+  name: string,
+  description: string
+}
 
 // user hooks
 export const useCreateUser = () => useMutation({
@@ -33,4 +36,10 @@ export const useLogin = () => useMutation({
 export const useUserPlans = () => useQuery({
   queryKey: ["plans"],
   queryFn: client.getPlan
+})
+
+
+export const useCreateplan = (onSuccess) => useMutation({
+  mutationFn: (plan: plan) => client.createPlan(plan),
+  onSuccess
 })

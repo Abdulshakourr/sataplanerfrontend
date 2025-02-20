@@ -1,9 +1,9 @@
+import expireDate from "@/lib/expireDate"
 import { useAuthStore } from "@/store/auth"
 import axios from "axios"
 
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
-const { access_token, refresh_token, setToken } = useAuthStore.getState()
 
 
 
@@ -11,28 +11,48 @@ export const userDataInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
     "Accept": "application/json",
-    "Authorization": `Bearer ${access_token}`
   }
 })
 
 
 userDataInstance.interceptors.request.use(async (config) => {
+  const { access_token, refresh_token, expireTime, setToken } = useAuthStore.getState();
 
-  const respon = await fetch(`${BASE_URL}/auth/refresh?refresh_token=${refresh_token}`, { method: "POST" })
-  if (!respon.ok) {
-    const rep = await respon.json()
-    console.log("REF_ERRor", rep)
-    // throw new (respon.statusText)
+  const currentTime = new Date();
+
+  // Check if token is expired
+  if (expireTime && new Date(expireTime) <= currentTime) {
+    console.log("Token expired. Refreshing...");
+
+    try {
+      // Send refresh request
+      const response = await axios.post(`${BASE_URL}/auth/refresh`, { refresh_token });
+
+      // Get new token and expiry time
+      const { access_token: newToken } = response.data;
+      const newExpireTime = expireDate(new Date()); // Set new expiry time
+
+      // Update auth store with new token
+      setToken(newToken, String(refresh_token), newExpireTime);
+
+      console.log("Token refreshed successfully!");
+
+      // Use new token in request
+      config.headers.Authorization = `Bearer ${newToken}`;
+    } catch (error) {
+      console.error("Failed to refresh token:", error);
+
+      // If refresh fails, log out the user
+      useAuthStore.getState().SignOut();
+      return Promise.reject(error);
+    }
+  } else {
+    // Token is valid, proceed with request
+    if (access_token) {
+      config.headers.Authorization = `Bearer ${access_token}`;
+    }
   }
-  const data = await respon.json()
-  console.log("DATA_REF", data)
-  setToken(data.access_token, data.refresh_token)
-  console.log("INterced....")
 
-  return config
-})
+  return config;
+});
 
-
-// userDataInstance.interceptors.response.use((response) => {
-//   console.log("RESPONSEEEJkl", response)
-// })
