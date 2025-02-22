@@ -35,11 +35,35 @@ export const useLogin = () => useMutation({
 
 export const useUserPlans = () => useQuery({
   queryKey: ["plans"],
-  queryFn: client.getPlan
+  queryFn: client.getPlans
 })
 
 
 export const useCreateplan = (onSuccess) => useMutation({
   mutationFn: (plan: plan) => client.createPlan(plan),
   onSuccess
+})
+
+export const useplanDelete = () => useMutation({
+  mutationFn: (id: string) => client.deletePlan(id)
+})
+
+export const usegetPlan = (id) => useQuery({
+  queryKey: ["plans", id],
+  queryFn: () => client.getPlan(id)
+})
+
+
+
+
+// motivation
+
+export const usegetMotivation = (id: string) => useQuery({
+  queryKey: ["plans", "motivation"],
+  queryFn: () => client.getMotivations(id)
+})
+
+
+export const usecreateMotivation = (id: string) => useMutation({
+  mutationFn: (data: { link: string | undefined, quote: string | undefined }) => client.createMotivation(data, id)
 })

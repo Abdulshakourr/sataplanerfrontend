@@ -9,6 +9,7 @@ import { Button } from "./ui/button"
 import { useCreateplan } from "@/api/hooks/hook"
 import { useQueryClient } from "@tanstack/react-query"
 import toast from "react-hot-toast"
+import { DialogClose } from "./ui/dialog"
 
 
 const formScheme = z.object({
@@ -85,11 +86,14 @@ export default function CreatePlan() {
                 </FormItem>
               )}
             />
-            <Button disabled={isPending} size={`lg`} className="bg-purple-500 hover:bg-purple-600 transition-all ease-in-out mt-2">
-              {
-                isPending ? "Creating..." : "reate plan"
-              }
-            </Button>
+            <DialogClose>
+
+              <Button disabled={isPending} size={`lg`} className="bg-purple-500 hover:bg-purple-600 transition-all ease-in-out mt-2">
+                {isPending ? "Creating..." : "Create plan"
+                }
+              </Button>
+            </DialogClose>
+
           </form>
         </Form>
 

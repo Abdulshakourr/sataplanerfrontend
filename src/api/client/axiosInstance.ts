@@ -26,7 +26,7 @@ userDataInstance.interceptors.request.use(async (config) => {
 
     try {
       // Send refresh request
-      const response = await axios.post(`${BASE_URL}/auth/refresh`, { refresh_token });
+      const response = await axios.post(`${BASE_URL}/auth/refresh?refresh_token=${refresh_token}`);
 
       // Get new token and expiry time
       const { access_token: newToken } = response.data;

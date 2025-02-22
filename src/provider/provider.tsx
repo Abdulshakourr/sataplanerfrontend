@@ -12,6 +12,7 @@ export default function Provider({ children }: { children: React.ReactNode }) {
         {children}
         <Toaster />
         <ReactQueryDevtools initialIsOpen={false} />
+
       </QueryClientProvider>
     </>
   );

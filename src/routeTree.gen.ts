@@ -14,6 +14,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as PrivateIndexImport } from './routes/private/index'
 import { Route as isAuthenticatedAuthImport } from './routes/(isAuthenticated)/_auth'
 import { Route as authSignUpIndexImport } from './routes/(auth)/sign-up/index'
 import { Route as authSignInIndexImport } from './routes/(auth)/sign-in/index'
@@ -34,6 +35,12 @@ const isAuthenticatedRoute = isAuthenticatedImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PrivateIndexRoute = PrivateIndexImport.update({
+  id: '/private/',
+  path: '/private/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -92,6 +99,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof isAuthenticatedAuthImport
       parentRoute: typeof isAuthenticatedRoute
+    }
+    '/private/': {
+      id: '/private/'
+      path: '/private'
+      fullPath: '/private'
+      preLoaderRoute: typeof PrivateIndexImport
+      parentRoute: typeof rootRoute
     }
     '/(auth)/sign-in/': {
       id: '/(auth)/sign-in/'
@@ -155,6 +169,7 @@ const isAuthenticatedRouteWithChildren = isAuthenticatedRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof isAuthenticatedAuthRouteWithChildren
+  '/private': typeof PrivateIndexRoute
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
   '/dashboard': typeof isAuthenticatedAuthDashboardIndexRoute
@@ -163,6 +178,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof isAuthenticatedAuthRouteWithChildren
+  '/private': typeof PrivateIndexRoute
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
   '/dashboard': typeof isAuthenticatedAuthDashboardIndexRoute
@@ -174,6 +190,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/(isAuthenticated)': typeof isAuthenticatedRouteWithChildren
   '/(isAuthenticated)/_auth': typeof isAuthenticatedAuthRouteWithChildren
+  '/private/': typeof PrivateIndexRoute
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/(auth)/sign-up/': typeof authSignUpIndexRoute
   '/(isAuthenticated)/_auth/dashboard/': typeof isAuthenticatedAuthDashboardIndexRoute
@@ -184,17 +201,25 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/private'
     | '/sign-in'
     | '/sign-up'
     | '/dashboard'
     | '/dashboard/plan/$planId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sign-in' | '/sign-up' | '/dashboard' | '/dashboard/plan/$planId'
+  to:
+    | '/'
+    | '/private'
+    | '/sign-in'
+    | '/sign-up'
+    | '/dashboard'
+    | '/dashboard/plan/$planId'
   id:
     | '__root__'
     | '/'
     | '/(isAuthenticated)'
     | '/(isAuthenticated)/_auth'
+    | '/private/'
     | '/(auth)/sign-in/'
     | '/(auth)/sign-up/'
     | '/(isAuthenticated)/_auth/dashboard/'
@@ -205,6 +230,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   isAuthenticatedRoute: typeof isAuthenticatedRouteWithChildren
+  PrivateIndexRoute: typeof PrivateIndexRoute
   authSignInIndexRoute: typeof authSignInIndexRoute
   authSignUpIndexRoute: typeof authSignUpIndexRoute
 }
@@ -212,6 +238,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   isAuthenticatedRoute: isAuthenticatedRouteWithChildren,
+  PrivateIndexRoute: PrivateIndexRoute,
   authSignInIndexRoute: authSignInIndexRoute,
   authSignUpIndexRoute: authSignUpIndexRoute,
 }
@@ -228,6 +255,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/(isAuthenticated)",
+        "/private/",
         "/(auth)/sign-in/",
         "/(auth)/sign-up/"
       ]
@@ -248,6 +276,9 @@ export const routeTree = rootRoute
         "/(isAuthenticated)/_auth/dashboard/",
         "/(isAuthenticated)/_auth/dashboard/plan/$planId"
       ]
+    },
+    "/private/": {
+      "filePath": "private/index.tsx"
     },
     "/(auth)/sign-in/": {
       "filePath": "(auth)/sign-in/index.tsx"
