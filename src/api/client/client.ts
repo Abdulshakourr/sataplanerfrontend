@@ -76,14 +76,13 @@ export const client = {
 
   // CreatePlan
 
-  async getPlan() {
+  async getPlans() {
     try {
       const response = await userDataInstance.get("/plans/allplans")
       return response.data
     } catch (error) {
       if (error) {
-        // console.log("Err", error)
-        // console.log("eerrData", error.response.data)
+        console.log("PL", error)
         throw new Error(error.response.data.detail)
       }
     }
@@ -98,6 +97,70 @@ export const client = {
       console.log("EEEEEEE", error)
       throw new Error(error.response.data.detail)
     }
+  },
+
+  async deletePlan(planId: string) {
+    try {
+      const response = await userDataInstance.delete(`/plans/delete/${planId}`)
+      return response.data
+    } catch (error) {
+      if (error.response.data) {
+        throw new Error(error.response.data.detail)
+      }
+
+    }
+  },
+
+  async getPlan(id: string) {
+    console.log("getPlan", id)
+    try {
+      const response = await userDataInstance.get(`/plans/plan/${id}`)
+      return response.data
+    } catch (error) {
+      if (error.response.data) {
+        console.log("EE", error)
+        throw new Error(error.response.data)
+      }
+
+    }
+  },
+
+  //motivations
+
+  async createMotivation(data, id) {
+    try {
+      console.log("Client", data, id)
+      const response = userDataInstance.post(`/motivations/${id}`, data)
+      return (await response).data
+    } catch (error) {
+      console.log("ClE", error)
+      throw new Error(error)
+
+    }
+  },
+
+
+  async getMotivations(planId: string) {
+    try {
+      const response = userDataInstance.get(`/motivations/plan/${planId}`)
+      console.log("cli", await response)
+      return (await response).data.data
+    } catch (error) {
+
+      throw new Error(error)
+
+    }
+  },
+
+  async deleteMotivation(id: string) {
+    try {
+      const response = userDataInstance.delete(`motivations/${id}`)
+      return (await response).data
+    } catch (error) {
+      throw new Error(error)
+    }
   }
+
+
 
 };

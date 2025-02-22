@@ -1,19 +1,17 @@
-import { useUserPlans } from '@/api/hooks/hook'
 import CreatePlan from '@/components/addPLan'
 import Planview from '@/components/Planview'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { useAuthStore } from '@/store/auth'
 import { createFileRoute } from '@tanstack/react-router'
-import { Plus } from 'lucide-react'
-
-
-
+import { Plus, Search } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Card } from '@/components/ui/card'
+import { useUserPlans } from '@/api/hooks/hook'
 
 type Datetype = {
-  id: number,
-  name: string,
+  id: string
+  name: string
   description: string
 }
 
@@ -23,65 +21,77 @@ export const Route = createFileRoute('/(isAuthenticated)/_auth/dashboard/')({
 
 function RouteComponent() {
   const { data, isError, error, isPending } = useUserPlans()
-  const { expireTime } = useAuthStore()
-  if (data) {
-    console.log("d", data)
-  }
+
   if (isError) {
     console.log("App", error)
-
-  }
-
-  if (isPending) {
     return (
-      <>
-        <div className='max-w-6xl mx-auto text-center'>
-          <h1 className='text-2xl mt-6 text-purple-400'>Loading...</h1>
-        </div></>
+      <div className="text-center py-8">
+        <p className="text-destructive">Error loading plans. Please try again later.</p>
+      </div>
     )
   }
-
-  console.log("Time", expireTime)
-
   return (
-    <>
+    <div className="max-w-6xl mx-auto my-8 px-4 sm:px-6 space-y-8">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="w-full max-w-md relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search plans..."
+            className="pl-10 bg-white py-4"
 
-      <div className='bg-gray-50 py-4 min-h-screen'>
-        <div className='max-w-6xl mx-auto px-6'>
-          <div className='flex justify-start my-6'>
-            <div className='max-w-md flex gap-2 w-full bg-orange-00'>
-              <Dialog>
-                <DialogTrigger>
-                  <Button asChild size={`lg`} className='bg-purple-500 hover:bg-purple-600 transitions-all ease-in-out font-bold'>
-                    <span>
-                      <Plus className='' /> <span>Create plan</span>
-                    </span>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogTitle className='text-center font-medium mb-4'>create your plan</DialogTitle>
-                  <CreatePlan />
-                </DialogContent>
-              </Dialog>
-
-              <Input placeholder='search' />
-            </div>
-          </div>
-          {/* view plans */}
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 my-3'>
-            {
-              data && (
-                data.map((plans: Datetype) => (
-                  <Planview key={plans.id} plan={plans} />
-                ))
-              )
-            }
-
-          </div>
+          />
         </div>
+
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              Create Plan
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle className="text-center">
+              Create Your Plan
+            </DialogTitle>
+            <DialogDescription className='text-center'>Create plan and stay motivated doing it.</DialogDescription>
+            <CreatePlan />
+          </DialogContent>
+        </Dialog>
       </div>
 
-    </>
+      {/* Plans Grid */}
+      {isPending ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i} className="p-6">
+              <Skeleton className="h-6 w-3/4 mb-4" />
+              <Skeleton className="h-4 w-full mb-2" />
+              <Skeleton className="h-4 w-5/6" />
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="grid lg:grid-cols-3 gap-4">
+          {data && data.length > 0 ? (
+            data.map((plans: Datetype) => (
+              <Planview key={plans.id} plan={plans} />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <div className="flex flex-col items-center space-y-4">
+                <Plus className="h-12 w-12 text-muted-foreground" />
+                <p className="text-xl font-medium text-muted-foreground">
+                  No plans created yet
+                </p>
+                <p className="text-muted-foreground">
+                  Start by creating your first plan
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   )
-
 }
