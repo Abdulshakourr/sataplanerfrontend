@@ -42,7 +42,7 @@ function RouteComponent() {
 
           />
         </div>
-
+        <Button>Generate QR-code</Button>
         <Dialog>
           <DialogTrigger asChild>
             <Button className="gap-2">
@@ -72,7 +72,7 @@ function RouteComponent() {
           ))}
         </div>
       ) : (
-        <div className="grid lg:grid-cols-3 gap-4">
+        <div className="grid lg:grid-cols-2 gap-4">
           {data && data.length > 0 ? (
             data.map((plans: Datetype) => (
               <Planview key={plans.id} plan={plans} />

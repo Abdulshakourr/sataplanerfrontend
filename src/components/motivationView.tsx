@@ -1,17 +1,34 @@
 
 import { usegetMotivation } from '@/api/hooks/hook'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Instagram, Quote, Youtube } from 'lucide-react'
+import { Instagram, Quote, Trash2Icon, Youtube } from 'lucide-react'
 import { Button } from './ui/button'
+import { userDataInstance } from '@/api/client/axiosInstance'
+import { useQueryClient } from '@tanstack/react-query'
+
+
+interface Motivation {
+  id: number,
+  link: string | null,
+  quote: string | null
+}
 
 
 export default function MotivationView({ id }: { id: string }) {
 
 
+  const queryClient = useQueryClient()
+
 
   const { data, isError, error, isPending } = usegetMotivation(id)
-  if (data) {
-    console.log("d", data)
+
+  if (isError) {
+    console.log("something went wrong", error)
+  }
+
+
+  if (isPending) {
+
   }
 
 
@@ -84,24 +101,35 @@ export default function MotivationView({ id }: { id: string }) {
       </Button>
     );
   };
+
+  function deleteMotivation<ElementType>(id: ElementType) {
+    console.log("clicket", id)
+    userDataInstance.delete(`/motivations/${id}`)
+      .then((data) => {
+        console.log("deleted", data)
+        queryClient.invalidateQueries({ queryKey: ["plans", "motivation"] })
+      }).catch((err) => console.log("E", err))
+  }
+
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {
           data && (
-            data?.map((motivation) => (
+            data?.map((motivation: Motivation) => (
               <>
-                <Card className="hover:shadow-md transition-shadow">
+                <Card className="hover:shadow-md transition-shadow  " key={motivation.quote}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
+                      <Trash2Icon className=' h-6 w-6 text-red-500' onClick={() => deleteMotivation(motivation.id)} />
                       <Quote className="h-5 w-5 text-primary" />
                       <CardTitle>Quotes</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      {/* Placeholder for quotes */}
+                    <div className="space-y-4 ">
                       {
                         motivation.quote ? (
                           <div className="text-muted-foreground italic  border-l-4 pl-2 ">
@@ -118,7 +146,7 @@ export default function MotivationView({ id }: { id: string }) {
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-md transition-shadow">
+                <Card className="hover:shadow-md transition-shadow" key={motivation.link}>
                   <CardHeader>
                     <div className="flex items-center gap-2">
                       <Youtube className="h-5 w-5 text-primary" />
