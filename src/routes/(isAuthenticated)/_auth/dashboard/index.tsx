@@ -42,7 +42,6 @@ function RouteComponent() {
 
           />
         </div>
-        <Button>Generate QR-code</Button>
         <Dialog>
           <DialogTrigger asChild>
             <Button className="gap-2">

@@ -9,11 +9,13 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Plus, StepBack, Quote, Youtube } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import MotivationView from '@/components/motivationView'
+import { userDataInstance } from '@/api/client/axiosInstance'
+import { useState } from 'react'
 
 export const Route = createFileRoute(
   '/(isAuthenticated)/_auth/dashboard/plan/$planId',
@@ -22,24 +24,77 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  const params = Route.useParams()
-  const { data, isError, error, isSuccess, isLoading } = usegetPlan(params.planId)
-
+  const { planId } = Route.useParams()
+  const { data, isError, error, isLoading } = usegetPlan(planId)
+  const [url, setUrl] = useState("")
+  const [loading, setLoading] = useState(false)
   if (isError) {
     console.log("idplan", error)
     return <div>Error loading plan details</div>
   }
 
+
+
+
+  const generateQr = () => {
+    setLoading(true)
+    userDataInstance.get(`/qrcode/generate-permanent-qr/${planId}`, {
+      responseType: "blob",
+    })
+      .then((data) => {
+        const url = URL.createObjectURL(data.data)
+        setLoading(false)
+        setUrl(url)
+      })
+  }
+
+
   return (
     <div className="min-h-screen  py-8">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-8">
         {/* Back Button */}
-        <Button variant="outline" asChild className="gap-2">
-          <Link to="/dashboard">
-            <StepBack className="h-4 w-4" />
-            Back to Dashboard
-          </Link>
-        </Button>
+
+
+        <div className='flex justify-between'>
+
+          <Button variant="outline" asChild className="gap-2">
+            <Link to="/dashboard">
+              <StepBack className="h-4 w-4" />
+              Back to Dashboard
+            </Link>
+          </Button>
+          <Dialog>
+            <DialogTrigger>
+              <Button size={`lg`}>Generate QR-code</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <div className='flex flex-col items-center justify-center'>
+                <DialogTitle className='py-4'>Generate QR-code</DialogTitle>
+                <DialogDescription>when you generate the qr-code scan it or download it</DialogDescription>
+                <div className='h-56 w-56 my-4 border-4 border-dotted flex justify-center items-center'>
+                  <h1 className="text-gray-200">
+
+                    {
+                      url ? <img src={url} /> : <span>Image</span>
+                    }
+
+                  </h1>
+                </div>
+
+                {
+                  loading ? <p className='text-center pl-6 text-indigo-500 py-4'>Generating....</p> : ""
+                }
+
+                {
+                  !url ? <Button onClick={generateQr}>Generate</Button> :
+                    <Button className="bg-green-500 hover:bg-green-600"><a href={url} download >Download</a></Button>
+                }
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+
 
         {/* Plan Details */}
         <Card className="p-6">
@@ -86,11 +141,11 @@ function RouteComponent() {
                       Add inspiring quotes or video links to keep you motivated
                     </DialogDescription>
                   </DialogHeader>
-                  <MotivationForm planId={params.planId} />
+                  <MotivationForm planId={planId} />
                 </DialogContent>
               </Dialog>
             </div>
-            <MotivationView id={params.planId} />
+            <MotivationView id={planId} />
           </div>
         </Card>
       </div>
