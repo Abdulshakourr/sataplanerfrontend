@@ -16,6 +16,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as PrivateIndexImport } from './routes/private/index'
 import { Route as isAuthenticatedAuthImport } from './routes/(isAuthenticated)/_auth'
+import { Route as QrcodenewViewPlanIndexImport } from './routes/qrcodenew/view-plan/index'
 import { Route as authSignUpIndexImport } from './routes/(auth)/sign-up/index'
 import { Route as authSignInIndexImport } from './routes/(auth)/sign-in/index'
 import { Route as isAuthenticatedAuthDashboardIndexImport } from './routes/(isAuthenticated)/_auth/dashboard/index'
@@ -47,6 +48,12 @@ const PrivateIndexRoute = PrivateIndexImport.update({
 const isAuthenticatedAuthRoute = isAuthenticatedAuthImport.update({
   id: '/_auth',
   getParentRoute: () => isAuthenticatedRoute,
+} as any)
+
+const QrcodenewViewPlanIndexRoute = QrcodenewViewPlanIndexImport.update({
+  id: '/qrcodenew/view-plan/',
+  path: '/qrcodenew/view-plan/',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const authSignUpIndexRoute = authSignUpIndexImport.update({
@@ -121,6 +128,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authSignUpIndexImport
       parentRoute: typeof rootRoute
     }
+    '/qrcodenew/view-plan/': {
+      id: '/qrcodenew/view-plan/'
+      path: '/qrcodenew/view-plan'
+      fullPath: '/qrcodenew/view-plan'
+      preLoaderRoute: typeof QrcodenewViewPlanIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/(isAuthenticated)/_auth/dashboard/': {
       id: '/(isAuthenticated)/_auth/dashboard/'
       path: '/dashboard'
@@ -172,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/private': typeof PrivateIndexRoute
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
+  '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
   '/dashboard': typeof isAuthenticatedAuthDashboardIndexRoute
   '/dashboard/plan/$planId': typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
 }
@@ -181,6 +196,7 @@ export interface FileRoutesByTo {
   '/private': typeof PrivateIndexRoute
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
+  '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
   '/dashboard': typeof isAuthenticatedAuthDashboardIndexRoute
   '/dashboard/plan/$planId': typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
 }
@@ -193,6 +209,7 @@ export interface FileRoutesById {
   '/private/': typeof PrivateIndexRoute
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/(auth)/sign-up/': typeof authSignUpIndexRoute
+  '/qrcodenew/view-plan/': typeof QrcodenewViewPlanIndexRoute
   '/(isAuthenticated)/_auth/dashboard/': typeof isAuthenticatedAuthDashboardIndexRoute
   '/(isAuthenticated)/_auth/dashboard/plan/$planId': typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
 }
@@ -204,6 +221,7 @@ export interface FileRouteTypes {
     | '/private'
     | '/sign-in'
     | '/sign-up'
+    | '/qrcodenew/view-plan'
     | '/dashboard'
     | '/dashboard/plan/$planId'
   fileRoutesByTo: FileRoutesByTo
@@ -212,6 +230,7 @@ export interface FileRouteTypes {
     | '/private'
     | '/sign-in'
     | '/sign-up'
+    | '/qrcodenew/view-plan'
     | '/dashboard'
     | '/dashboard/plan/$planId'
   id:
@@ -222,6 +241,7 @@ export interface FileRouteTypes {
     | '/private/'
     | '/(auth)/sign-in/'
     | '/(auth)/sign-up/'
+    | '/qrcodenew/view-plan/'
     | '/(isAuthenticated)/_auth/dashboard/'
     | '/(isAuthenticated)/_auth/dashboard/plan/$planId'
   fileRoutesById: FileRoutesById
@@ -233,6 +253,7 @@ export interface RootRouteChildren {
   PrivateIndexRoute: typeof PrivateIndexRoute
   authSignInIndexRoute: typeof authSignInIndexRoute
   authSignUpIndexRoute: typeof authSignUpIndexRoute
+  QrcodenewViewPlanIndexRoute: typeof QrcodenewViewPlanIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -241,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivateIndexRoute: PrivateIndexRoute,
   authSignInIndexRoute: authSignInIndexRoute,
   authSignUpIndexRoute: authSignUpIndexRoute,
+  QrcodenewViewPlanIndexRoute: QrcodenewViewPlanIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -257,7 +279,8 @@ export const routeTree = rootRoute
         "/(isAuthenticated)",
         "/private/",
         "/(auth)/sign-in/",
-        "/(auth)/sign-up/"
+        "/(auth)/sign-up/",
+        "/qrcodenew/view-plan/"
       ]
     },
     "/": {
@@ -285,6 +308,9 @@ export const routeTree = rootRoute
     },
     "/(auth)/sign-up/": {
       "filePath": "(auth)/sign-up/index.tsx"
+    },
+    "/qrcodenew/view-plan/": {
+      "filePath": "qrcodenew/view-plan/index.tsx"
     },
     "/(isAuthenticated)/_auth/dashboard/": {
       "filePath": "(isAuthenticated)/_auth/dashboard/index.tsx",
