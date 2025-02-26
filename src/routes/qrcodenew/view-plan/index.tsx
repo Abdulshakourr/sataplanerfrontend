@@ -24,7 +24,6 @@ export const Route = createFileRoute('/qrcodenew/view-plan/')({
 
 function RouteComponent() {
   const search = Route.useSearch()
-
   console.log("SS", search.token)
 
 
@@ -48,6 +47,9 @@ function RouteComponent() {
     console.log("derder")
     router.navigate({ to: "/sign-in" })
   }
+
+
+
 
 
   return (
