@@ -35,11 +35,12 @@ export const useLogin = () => useMutation({
 
 export const useUserPlans = () => useQuery({
   queryKey: ["plans"],
-  queryFn: client.getPlans
+  queryFn: client.getPlans,
+  select: (data) => data.reverse()
 })
 
 
-export const useCreateplan = (onSuccess) => useMutation({
+export const useCreateplan = (onSuccess: () => void) => useMutation({
   mutationFn: (plan: plan) => client.createPlan(plan),
   onSuccess
 })
@@ -48,7 +49,7 @@ export const useplanDelete = () => useMutation({
   mutationFn: (id: string) => client.deletePlan(id)
 })
 
-export const usegetPlan = (id) => useQuery({
+export const usegetPlan = (id: string) => useQuery({
   queryKey: ["plans", id],
   queryFn: () => client.getPlan(id)
 })

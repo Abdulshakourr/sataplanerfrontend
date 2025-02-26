@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { userDataInstance } from "./axiosInstance";
 
 
@@ -43,8 +44,8 @@ export const client = {
     })
     if (!response.ok) {
       const resp = await response.json()
-      console.log("DEEER", resp)
-      console.log("DER", resp.detail[0]?.msg)
+      // console.log("DEEER", resp)
+      // console.log("DER", resp.detail[0]?.msg)
       throw new Error(resp?.detail?.[0].msg || resp.detail)
     }
 
@@ -80,10 +81,12 @@ export const client = {
     try {
       const response = await userDataInstance.get("/plans/allplans")
       return response.data
-    } catch (error) {
-      if (error) {
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
         console.log("PL", error)
-        throw new Error(error.response.data.detail)
+        if (error.response) {
+          throw new Error(error.response.data.detail)
+        }
       }
     }
   },
@@ -93,9 +96,13 @@ export const client = {
       const response = await userDataInstance.post("/plans/add", plan)
       console.log("YYYY", response)
       return response.data
-    } catch (error) {
+    } catch (error: unknown) {
       console.log("EEEEEEE", error)
-      throw new Error(error.response.data.detail)
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          throw new Error(error.response.data.detail)
+        }
+      }
     }
   },
 
@@ -103,11 +110,12 @@ export const client = {
     try {
       const response = await userDataInstance.delete(`/plans/delete/${planId}`)
       return response.data
-    } catch (error) {
-      if (error.response.data) {
-        throw new Error(error.response.data.detail)
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          throw new Error(error.response.data.detail)
+        }
       }
-
     }
   },
 
@@ -116,26 +124,31 @@ export const client = {
     try {
       const response = await userDataInstance.get(`/plans/plan/${id}`)
       return response.data
-    } catch (error) {
-      if (error.response.data) {
-        console.log("EE", error)
-        throw new Error(error.response.data)
-      }
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          console.log("EE", error)
+          throw new Error(error.response.data)
+        }
 
+      }
     }
   },
 
   //motivations
 
-  async createMotivation(data, id) {
+  async createMotivation(data: { link: string | undefined, quote: string | undefined }, id: string) {
     try {
       console.log("Client", data, id)
       const response = userDataInstance.post(`/motivations/${id}`, data)
       return (await response).data
-    } catch (error) {
-      console.log("ClE", error)
-      throw new Error(error)
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          throw new Error(error.response.data)
 
+        }
+      }
     }
   },
 
@@ -145,10 +158,13 @@ export const client = {
       const response = userDataInstance.get(`/motivations/plan/${planId}`)
       console.log("cli", await response)
       return (await response).data.data
-    } catch (error) {
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          throw new Error(error.response.data)
 
-      throw new Error(error)
-
+        }
+      }
     }
   },
 
@@ -156,8 +172,13 @@ export const client = {
     try {
       const response = userDataInstance.delete(`motivations/${id}`)
       return (await response).data
-    } catch (error) {
-      throw new Error(error)
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          throw new Error(error.response.data)
+
+        }
+      }
     }
   }
 
