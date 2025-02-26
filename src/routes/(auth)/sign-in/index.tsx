@@ -19,7 +19,6 @@ type userLogin = {
 
 
 function RouteComponent() {
-
   const { mutate, data: detail, isPending, isError, error, isSuccess } = useLogin()
   const onSingin = (data: userLogin) => {
     console.log("log", data)
@@ -28,6 +27,7 @@ function RouteComponent() {
   const router = useRouter()
   const { setToken } = useAuthStore()
   const expire = expireDate(new Date)
+
   useEffect(() => {
     if (isSuccess) {
       console.log(detail)
@@ -37,34 +37,27 @@ function RouteComponent() {
     }
   }, [isSuccess])
 
-
   if (isError) {
     toast.error(error?.message)
   }
 
-
-
   return (
-    <>
-      <div className='min-h-screen py-12 px-4 sm:px-6 lg:px-8'>
-
-        <div className='max-w-6xl mx-auto'>
-          <div className='max-w-lg mx-auto'>
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  <div className='text-center mb-4'>
-                    <h1 className='text-2xl sm:text-3xl font-semibold text-purple-600'>Create Account!</h1>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='py-4'>
-                <FormLogin onLogin={onSingin} loading={isPending} />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
+        <Card className="shadow-xl border-gray-200">
+          <CardHeader className="pb-0">
+            <CardTitle>
+              <div className="text-center">
+                <h1 className="text-3xl font-bold text-purple-600">Welcome Back</h1>
+                <p className="mt-1 text-sm text-gray-500">Sign in to your account</p>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <FormLogin onLogin={onSingin} loading={isPending} />
+          </CardContent>
+        </Card>
       </div>
-    </>
+    </div>
   )
 }
