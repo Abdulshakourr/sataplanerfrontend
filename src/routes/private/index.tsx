@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button'
 import { Card, CardTitle } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -7,30 +8,27 @@ import { useMutation } from '@tanstack/react-query'
 import { useRouter } from '@tanstack/react-router'
 import { createFileRoute } from '@tanstack/react-router'
 import axios from 'axios'
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod' // Make sure you have Zod installed
+import { z } from 'zod'
 
 export const Route = createFileRoute('/private/')({
   component: RouteComponent,
-  // Add search param validation
   validateSearch: z.object({
-    plan_id: z.number().catch(0) // Coerces to number, defaults to 0 if invalid
+    plan_id: z.number().catch(0)
   }),
 })
 
-
 const Base_URL = "http://localhost:8000"
 
-
 const formSchema = z.object({
-  password: z.string().min(8).regex(/[A-Z]/, { message: "password most contain at least one uppercase letter" }).regex(/[1-9]/, {
-    message: "password most contain at least one number"
-  }).regex(/[!@#$%^&*]/, { message: "password most contain at least one special character" })
+  password: z.string()
+    .min(8)
+    .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+    .regex(/[1-9]/, { message: "Password must contain at least one number" })
+    .regex(/[!@#$%^&*]/, { message: "Password must contain at least one special character" })
 })
 
 function RouteComponent() {
-  // Now TypeScript will know about plan_id
   const { plan_id } = Route.useSearch()
   console.log("p", plan_id)
 
@@ -40,7 +38,6 @@ function RouteComponent() {
     mutationFn: async (data: { plan_id: number, password: string }) => {
       console.log("m", data.plan_id, data.password)
       const response = await axios.post(`${Base_URL}/qrcode/verify-plan-access?plan_id=${data.plan_id}&password=${data.password}`)
-
       return response.data
     }
   })
@@ -61,52 +58,57 @@ function RouteComponent() {
     }
   })
 
-
-  const onSubmit = (Value: z.infer<typeof formSchema>) => {
-    console.log("v", Value)
-    const data = { ...Value, plan_id }
+  const onSubmit = (value: z.infer<typeof formSchema>) => {
+    console.log("v", value)
+    const data = { ...value, plan_id }
     console.log(data)
     mutate(data)
   }
 
-
   return (
-    <>
-      <div className='min-h-screen  bg-white'>
-
-        <div className=' '>
-          <div className='flex justify-center items-center h-screen bg-black/90'>
-            <Card className='max-w-md w-full py-4 px-3 text-center '>
-              <CardTitle className='my-3 text-2xl '>not Authenticated</CardTitle>
-              <Form {...form}>
-                <form className='space-y-3' onSubmit={form.handleSubmit(onSubmit)}>
-                  <FormField
-                    name='password'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Enter your password</FormLabel>
-                        <FormControl>
-                          <div className='max-w-[200px] mx-auto '>
-                            <Input className='rounded-md' placeholder='**********' type='password' {...field} />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button className='py-3' disabled={isPending}> {isPending ? "Authenticating..." : "Authenticate"} </Button>
-                </form>
-              </Form>
-            </Card>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-    </>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <Card className="max-w-md w-full bg-white/90 backdrop-blur-sm border-none shadow-lg rounded-xl p-6">
+        <CardTitle className="text-2xl font-semibold text-gray-900 text-center mb-6">
+          Authentication Required
+        </CardTitle>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700">Enter Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="h-12 bg-gray-50 border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 rounded-lg transition-all"
+                      placeholder="••••••••"
+                      type="password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs text-red-500" />
+                </FormItem>
+              )}
+            />
+            <Button
+              className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all"
+              disabled={isPending}
+            >
+              {isPending ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Authenticating...
+                </span>
+              ) : (
+                "Authenticate"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </Card>
+    </div>
   )
-
 }

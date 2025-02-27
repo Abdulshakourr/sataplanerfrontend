@@ -1,11 +1,13 @@
+'use client'
+
+import { useEffect } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useLogin } from '@/api/hooks/hook'
-import FormLogin from '@/components/signInForm'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import expireDate from '@/lib/expireDate'
 import { useAuthStore } from '@/store/auth'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useEffect } from 'react'
 import toast from 'react-hot-toast'
+import FormLogin from '@/components/signInForm'
 
 export const Route = createFileRoute('/(auth)/sign-in/')({
   component: RouteComponent,
@@ -16,11 +18,9 @@ type userLogin = {
   password: string
 }
 
-
-
 function RouteComponent() {
   const { mutate, data: detail, isPending, isError, error, isSuccess } = useLogin()
-  const onSingin = (data: userLogin) => {
+  const onSignin = (data: userLogin) => {
     console.log("log", data)
     mutate(data)
   }
@@ -42,22 +42,20 @@ function RouteComponent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md">
-        <Card className="shadow-xl border-gray-200">
-          <CardHeader className="pb-0">
-            <CardTitle>
-              <div className="text-center">
-                <h1 className="text-3xl font-bold text-purple-600">Welcome Back</h1>
-                <p className="mt-1 text-sm text-gray-500">Sign in to your account</p>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <FormLogin onLogin={onSingin} loading={isPending} />
-          </CardContent>
-        </Card>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+      <Card className="w-full max-w-md border-none shadow-lg bg-white/90 backdrop-blur-sm">
+        <CardHeader className="space-y-1 pb-6">
+          <CardTitle className="text-2xl font-semibold tracking-tight text-center text-gray-900">
+            Welcome Back
+          </CardTitle>
+          <CardDescription className="text-center text-gray-500">
+            Sign in to access your account
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="px-8 pb-8">
+          <FormLogin onLogin={onSignin} loading={isPending} />
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -1,19 +1,18 @@
-import { Link } from "@tanstack/react-router"
-import { useplanDelete } from "@/api/hooks/hook"
-import toast from "react-hot-toast"
-import { useQueryClient } from "@tanstack/react-query"
-import { Trash2 } from "lucide-react"
-import { Card, } from "./ui/card"
+
+import { Card } from '@/components/ui/card'
+import { Trash2 } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
+import { useplanDelete } from '@/api/hooks/hook'
+import toast from 'react-hot-toast'
 
 type planView = {
-  id: string,
-  name: string,
+  id: string
+  name: string
   description: string
 }
 
-
 export default function Planview({ plan }: { plan: planView }) {
-
   const { mutate, isSuccess, isError, error, data } = useplanDelete()
   const { id, name, description } = plan
   const queryClient = useQueryClient()
@@ -24,7 +23,7 @@ export default function Planview({ plan }: { plan: planView }) {
   }
 
   if (isError) {
-    console.log("onDelet", error)
+    console.log("onDelete", error)
     toast.error(error.message)
   }
   if (isSuccess) {
@@ -35,22 +34,22 @@ export default function Planview({ plan }: { plan: planView }) {
   }
 
   return (
-    <>
-      <Card className=" bg-purple-50 flex justify-between items-center gap-3 py-2 px-3 sm:py-3 sm:px-4">
-        {/* <div className="flex gap-8 py-4 px-6 items-center justify-between"> */}
-        <div>
-          <h1 className="text-2xl sm:text-xl  font-semibold mb-2  hover:underline hover:cursor-pointer" >
-            <Link to="/dashboard/plan/$planId" params={{ planId: id }}>
-              {name}
-            </Link></h1>
-          <p className="font-medium text-sm"> {description} </p>
-        </div>
-        <div>
-          <Trash2 className="text-red-300 w-8 h-8" onClick={onDelete} />
-        </div>
-        {/* </div> */}
-      </Card>
-
-    </>
+    <Card className="bg-white p-6 flex justify-between items-center gap-4 shadow-sm hover:shadow-md transition-shadow border border-gray-100 rounded-lg">
+      <div className="space-y-1">
+        <h1 className="text-xl font-semibold text-gray-900 hover:text-purple-600 transition-colors">
+          <Link to="/dashboard/plan/$planId" params={{ planId: id }}>
+            {name}
+          </Link>
+        </h1>
+        <p className="text-sm text-gray-600 line-clamp-2">{description}</p>
+      </div>
+      <button
+        onClick={onDelete}
+        className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+        aria-label={`Delete plan ${name}`}
+      >
+        <Trash2 className="h-5 w-5" />
+      </button>
+    </Card>
   )
 }
