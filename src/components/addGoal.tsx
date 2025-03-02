@@ -11,6 +11,7 @@ import { useCreateplan } from "@/api/hooks/hook"
 import { useQueryClient } from "@tanstack/react-query"
 import toast from "react-hot-toast"
 import { DialogClose } from "@/components/ui/dialog"
+import { useEffect } from "react"
 
 const formScheme = z.object({
   name: z.string().min(2, { message: "Plan name should be at least 2 characters" }),
@@ -24,7 +25,7 @@ export default function CreatePlan() {
     queryClient.invalidateQueries({ queryKey: ["plans"] })
   }
 
-  const { mutate, isPending, isError, error, data } = useCreateplan(onSuccess)
+  const { mutate, isPending, isSuccess, isError, error, data } = useCreateplan(onSuccess)
 
   const form = useForm<z.infer<typeof formScheme>>({
     resolver: zodResolver(formScheme),
@@ -35,7 +36,6 @@ export default function CreatePlan() {
   })
 
   const onSubmit = (value: z.infer<typeof formScheme>) => {
-    console.log("added", value)
     mutate(value) // Uncommented to send data to the API
   }
 
@@ -44,10 +44,13 @@ export default function CreatePlan() {
     toast.error(error.message)
   }
 
-  if (data) {
-    console.log("dddddddd", data)
-    toast.success(data.message)
-  }
+  useEffect(() => {
+    if (data) {
+      console.log("dddddddd", data)
+      toast.success(data.message)
+    }
+  }, [isSuccess])
+
 
   return (
     <div className="space-y-6">
@@ -58,7 +61,7 @@ export default function CreatePlan() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-gray-700">Plan Name</FormLabel>
+                <FormLabel className="text-sm font-medium text-gray-700">Goal Name</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Enter plan name"

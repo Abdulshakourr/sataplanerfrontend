@@ -116,68 +116,67 @@ export default function MotivationView({ id }: { id: string }) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {data && data.map((motivation: Motivation) => (
-          <>
-            <Card
-              className="bg-white/90 backdrop-blur-sm border-none shadow-md hover:shadow-lg rounded-xl overflow-hidden transition-all"
-              key={`quote-${motivation.id}`}
-            >
-              <CardHeader className="py-3 px-4 flex items-center justify-between border-b border-gray-100 bg-gray-50/50">
-                <div className="flex items-center gap-2">
-                  <Quote className="h-4 w-4 text-purple-500" />
-                  <CardTitle className="text-sm font-medium text-gray-700">Quote</CardTitle>
+      {data && data.map((motivation: Motivation) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6" key={motivation.id} >
+          <Card
+            className="bg-white/90 backdrop-blur-sm border-none shadow-md hover:shadow-lg rounded-xl overflow-hidden transition-all"
+          >
+            <CardHeader className="py-3 px-4 flex items-center justify-between border-b border-gray-100 bg-gray-50/50">
+              <div className="flex items-center gap-2">
+                <Quote className="h-4 w-4 text-purple-500" />
+                <CardTitle className="text-sm font-medium text-gray-700">Quote</CardTitle>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                onClick={() => deleteMotivation(motivation.id)}
+              >
+                <Trash2Icon className="h-4 w-4" />
+                <span className="sr-only">Delete</span>
+              </Button>
+            </CardHeader>
+            <CardContent className="p-4">
+              {motivation.quote ? (
+                <div className="py-2 px-3 bg-gray-50 rounded-lg text-gray-600 text-sm italic">
+                  "{motivation.quote}"
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                  onClick={() => deleteMotivation(motivation.id)}
-                >
-                  <Trash2Icon className="h-4 w-4" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </CardHeader>
-              <CardContent className="p-4">
-                {motivation.quote ? (
-                  <div className="py-2 px-3 bg-gray-50 rounded-lg text-gray-600 text-sm italic">
-                    "{motivation.quote}"
-                  </div>
-                ) : (
-                  renderEmptyState('quote')
-                )}
-              </CardContent>
-            </Card>
+              ) : (
+                renderEmptyState('quote')
+              )}
+            </CardContent>
+          </Card>
 
-            <Card
-              className="bg-white/90 backdrop-blur-sm border-none shadow-md hover:shadow-lg rounded-xl overflow-hidden transition-all"
-              key={`media-${motivation.id}`}
-            >
-              <CardHeader className="py-3 px-4 flex items-center justify-between border-b border-gray-100 bg-gray-50/50">
-                <div className="flex items-center gap-2">
-                  <Youtube className="h-4 w-4 text-red-500" />
-                  <CardTitle className="text-sm font-medium text-gray-700">Media</CardTitle>
+          <Card
+            className="bg-white/90 backdrop-blur-sm border-none shadow-md hover:shadow-lg rounded-xl overflow-hidden transition-all"
+            key={`media-${motivation.id}`}
+          >
+            <CardHeader className="py-3 px-4 flex items-center justify-between border-b border-gray-100 bg-gray-50/50">
+              <div className="flex items-center gap-2">
+                <Youtube className="h-4 w-4 text-red-500" />
+                <CardTitle className="text-sm font-medium text-gray-700">Media</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              {motivation.link ? (
+                <div>
+                  {renderMediaLink(motivation.link)}
                 </div>
-              </CardHeader>
-              <CardContent className="p-4">
-                {motivation.link ? (
-                  <div>
-                    {renderMediaLink(motivation.link)}
-                  </div>
-                ) : (
-                  renderEmptyState('media')
-                )}
-              </CardContent>
-            </Card>
-          </>
-        ))}
-      </div>
-
-      {data && data.length > 0 && (
-        <div className="mt-4 text-center text-sm text-gray-500 italic">
-          "Stay inspired by adding motivational content regularly."
+              ) : (
+                renderEmptyState('media')
+              )}
+            </CardContent>
+          </Card>
         </div>
-      )}
-    </div>
+      ))}
+
+      {
+        data && data.length > 0 && (
+          <div className="mt-4 text-center text-sm text-gray-500 italic">
+            "Stay inspired by adding motivational content regularly."
+          </div>
+        )
+      }
+    </div >
   )
 }

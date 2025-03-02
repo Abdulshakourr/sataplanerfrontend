@@ -14,9 +14,10 @@ type usercreate = {
 }
 
 
-type plan = {
+type goal = {
   name: string,
   description: string
+  created_at: Date
 }
 
 
@@ -76,24 +77,9 @@ export const client = {
   //end of user
 
   // CreatePlan
-
-  async getPlans() {
+  async createPlan(goal: goal) {
     try {
-      const response = await userDataInstance.get("/plans/allplans")
-      return response.data
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        console.log("PL", error)
-        if (error.response) {
-          throw new Error(error.response.data.detail)
-        }
-      }
-    }
-  },
-
-  async createPlan(plan: plan) {
-    try {
-      const response = await userDataInstance.post("/plans/add", plan)
+      const response = await userDataInstance.post("/goals/add", goal)
       console.log("YYYY", response)
       return response.data
     } catch (error: unknown) {
@@ -106,12 +92,13 @@ export const client = {
     }
   },
 
-  async deletePlan(planId: string) {
+  async getPlans() {
     try {
-      const response = await userDataInstance.delete(`/plans/delete/${planId}`)
+      const response = await userDataInstance.get("/goals/allgoals")
       return response.data
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
+        console.log("PL", error)
         if (error.response) {
           throw new Error(error.response.data.detail)
         }
@@ -119,10 +106,12 @@ export const client = {
     }
   },
 
+
+
   async getPlan(id: string) {
     console.log("getPlan", id)
     try {
-      const response = await userDataInstance.get(`/plans/plan/${id}`)
+      const response = await userDataInstance.get(`/goals/goal/${id}`)
       return response.data
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
@@ -131,6 +120,21 @@ export const client = {
           throw new Error(error.response.data)
         }
 
+      }
+    }
+  },
+
+
+
+  async deletePlan(planId: string) {
+    try {
+      const response = await userDataInstance.delete(`/goals/delete/${planId}`)
+      return response.data
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          throw new Error(error.response.data.detail)
+        }
       }
     }
   },
@@ -155,7 +159,7 @@ export const client = {
 
   async getMotivations(planId: string) {
     try {
-      const response = userDataInstance.get(`/motivations/plan/${planId}`)
+      const response = userDataInstance.get(`/motivations/${planId}`)
       console.log("cli", await response)
       return (await response).data.data
     } catch (error: unknown) {

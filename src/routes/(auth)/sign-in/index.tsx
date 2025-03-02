@@ -1,9 +1,8 @@
-'use client'
+
 
 import { useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useLogin } from '@/api/hooks/hook'
-import expireDate from '@/lib/expireDate'
 import { useAuthStore } from '@/store/auth'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import toast from 'react-hot-toast'
@@ -26,16 +25,21 @@ function RouteComponent() {
   }
   const router = useRouter()
   const { setToken } = useAuthStore()
-  const expire = expireDate(new Date)
 
   useEffect(() => {
     if (isSuccess) {
-      console.log(detail)
-      const { access_token, refresh_token } = detail
-      setToken(access_token, refresh_token, expire)
-      router.navigate({ to: "/dashboard" })
+      console.log(detail);
+      const { access_token, refresh_token, access_token_expires_in } = detail;
+
+      // Calculate expiry times
+      const accessExpireTime = new Date(Date.now() + access_token_expires_in * 1000);
+
+      // Update auth store
+      setToken(access_token, refresh_token, accessExpireTime);
+
+      router.navigate({ to: "/dashboard" });
     }
-  }, [isSuccess])
+  }, [isSuccess]);
 
   if (isError) {
     toast.error(error?.message)
