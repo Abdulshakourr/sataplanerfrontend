@@ -27,7 +27,7 @@ function RouteComponent() {
     queryKey: ["private", search.token],
     queryFn: async () => {
       try {
-        const response = await axios.get(`${Base_URL}/qrcode/view-plan?token=${search.token}`)
+        const response = await axios.get(`${Base_URL}/qrcode/view-goal?token=${search.token}`)
         console.log("res", response)
         return response.data
       } catch (error) {
@@ -37,6 +37,8 @@ function RouteComponent() {
     }
   })
 
+
+  console.log("d", data)
   if (isError) {
     console.log("derder")
     router.navigate({ to: "/sign-in" })
@@ -46,7 +48,7 @@ function RouteComponent() {
     <div className="min-h-screen py-12 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto space-y-8">
 
-        {/* Plan Details */}
+        {/* Goal Details  */}
         <Card className="bg-white/95 backdrop-blur-md border-teal-200 border shadow-md rounded-2xl overflow-hidden">
           <div className="p-6 space-y-4">
             {isLoading ? (
@@ -57,8 +59,8 @@ function RouteComponent() {
               </div>
             ) : (
               <>
-                <h1 className="text-3xl font-bold text-teal-800 leading-tight">{data?.plan_details.name}</h1>
-                <p className="text-teal-600 text-sm leading-relaxed">{data?.plan_details.description}</p>
+                <h1 className="text-3xl font-bold text-teal-800 leading-tight">{data?.goal_details.name}</h1>
+                <p className="text-teal-600 text-sm leading-relaxed">{data?.goal_details.description}</p>
               </>
             )}
           </div>
@@ -73,7 +75,7 @@ function RouteComponent() {
               </div>
               <h2 className="text-xl font-semibold text-teal-800">Your Motivations</h2>
             </div>
-            <Motivateview motivation={data?.plan_details?.motivations} />
+            <Motivateview motivation={data?.goal_details?.motivations} />
           </div>
         </Card>
       </div>

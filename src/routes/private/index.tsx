@@ -14,7 +14,7 @@ import { z } from 'zod'
 export const Route = createFileRoute('/private/')({
   component: RouteComponent,
   validateSearch: z.object({
-    plan_id: z.number().catch(0)
+    goal_id: z.number().catch(0)
   }),
 })
 
@@ -29,15 +29,15 @@ const formSchema = z.object({
 })
 
 function RouteComponent() {
-  const { plan_id } = Route.useSearch()
-  console.log("p", plan_id)
+  const { goal_id } = Route.useSearch()
+  console.log("p", goal_id)
 
   const router = useRouter()
 
   const { mutate, isPending, isSuccess, data } = useMutation({
-    mutationFn: async (data: { plan_id: number, password: string }) => {
-      console.log("m", data.plan_id, data.password)
-      const response = await axios.post(`${Base_URL}/qrcode/verify-plan-access?plan_id=${data.plan_id}&password=${data.password}`)
+    mutationFn: async (data: { goal_id: number, password: string }) => {
+      console.log("m", data.goal_id, data.password)
+      const response = await axios.post(`${Base_URL}/qrcode/verify-goal-access?goal_id=${data.goal_id}&password=${data.password}`)
       return response.data
     }
   })
@@ -48,7 +48,7 @@ function RouteComponent() {
 
   if (isSuccess) {
     console.log("s", data.redirect_url)
-    router.navigate({ to: `/${data.redirect_url}` })
+    router.navigate({ to: `/qrcodenew/view-plan`, search: { token: data.token } })
   }
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -60,7 +60,7 @@ function RouteComponent() {
 
   const onSubmit = (value: z.infer<typeof formSchema>) => {
     console.log("v", value)
-    const data = { ...value, plan_id }
+    const data = { ...value, goal_id }
     console.log(data)
     mutate(data)
   }

@@ -5,22 +5,22 @@ import { Link } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { useplanDelete } from '@/api/hooks/hook'
 import toast from 'react-hot-toast'
-
-type planView = {
+import { formatDistanceToNow } from "date-fns"; type planView = {
   id: string
   name: string
   description: string
+  created_at: string
 }
 
-export default function Planview({ plan }: { plan: planView }) {
+export default function Goalview({ plan }: { plan: planView }) {
   const { mutate, isSuccess, isError, error, data } = useplanDelete()
-  const { id, name, description } = plan
+  const { id, name, created_at, description } = plan
   const queryClient = useQueryClient()
-
   const onDelete = () => {
     console.log("ID:", id)
     mutate(id)
   }
+
 
   if (isError) {
     console.log("onDelete", error)
@@ -42,6 +42,7 @@ export default function Planview({ plan }: { plan: planView }) {
           </Link>
         </h1>
         <p className="text-sm text-gray-600 line-clamp-2">{description}</p>
+        <p className='text-sm pt-3 italic text-gray-300'>  {formatDistanceToNow(new Date(created_at + "Z"), { addSuffix: true })}</p>
       </div>
       <button
         onClick={onDelete}

@@ -97,71 +97,69 @@ export default function Motivateview({ motivation }: MotivateviewProps) {
     <>
 
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {
-          motivation && (
-            motivation?.map((motivations: Motivation) => (
-              <>
-                <div key={motivations.id} className="contents">
-                  <Card className="hover:shadow-md transition-shadow  ">
-                    <CardHeader>
-                      <div className="flex items-center gap-2">
-                        <Quote className="h-5 w-5 text-primary" />
-                        <CardTitle>Quotes</CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4 ">
-                        {
-                          motivations.quote ? (
-                            <div className="text-muted-foreground italic  border-l-4 pl-2 ">
-                              {motivations.quote}
-                            </div>
-                          ) : (
-                            <div className="text-muted-foreground">
-                              No quotes added yet
-                            </div>
+      {
+        motivation && (
+          motivation?.map((motivations: Motivation) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6" key={motivations.id}>
+              <div className="contents">
+                <Card className="hover:shadow-md transition-shadow  ">
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <Quote className="h-5 w-5 text-primary" />
+                      <CardTitle>Quotes</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4 ">
+                      {
+                        motivations.quote ? (
+                          <div className="text-muted-foreground italic  border-l-4 pl-2 ">
+                            {motivations.quote}
+                          </div>
+                        ) : (
+                          <div className="text-muted-foreground">
+                            No quotes added yet
+                          </div>
 
-                          )
-                        }
-                      </div>
-                    </CardContent>
-                  </Card>
+                        )
+                      }
+                    </div>
+                  </CardContent>
+                </Card>
 
-                  <Card className="hover:shadow-md transition-shadow" key={motivations.link}>
-                    <CardHeader>
-                      <div className="flex items-center gap-2">
-                        <Youtube className="h-5 w-5 text-primary" />
-                        <CardTitle>Videos</CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        {/* Placeholder for videos */}
-                        {
-                          motivations.link ? (
-                            <div className="text-muted-foreground">
-                              {
-                                renderMediaLink(motivations.link)
-                              }
-                            </div>
-                          ) : (
-                            <div className="text-muted-foreground">
-                              No videos added yet
-                            </div>
-                          )
-                        }
+                <Card className="hover:shadow-md transition-shadow" key={motivations.link}>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      <Youtube className="h-5 w-5 text-primary" />
+                      <CardTitle>Videos</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {/* Placeholder for videos */}
+                      {
+                        motivations.link ? (
+                          <div className="text-muted-foreground">
+                            {
+                              renderMediaLink(motivations.link)
+                            }
+                          </div>
+                        ) : (
+                          <div className="text-muted-foreground">
+                            No videos added yet
+                          </div>
+                        )
+                      }
 
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </>
-            ))
-          )
-        }
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          ))
+        )
+      }
 
-      </div>
     </>
   )
 }

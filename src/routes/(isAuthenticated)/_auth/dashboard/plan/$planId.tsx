@@ -168,9 +168,8 @@ function RouteComponent() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <Badge className="bg-purple-100 text-purple-700 border-purple-200 px-3 py-1 font-medium">
-                    Plan
+                    Goal
                   </Badge>
-                  <span className="text-sm text-gray-500">ID: {planId.substring(0, 8)}</span>
                 </div>
                 <CardTitle className="text-2xl sm:text-3xl font-semibold text-gray-900">
                   {data?.name}

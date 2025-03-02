@@ -6,13 +6,14 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Plus, Search } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUserPlans } from '@/api/hooks/hook'
-import CreatePlan from '@/components/addPLan'
-import Planview from '@/components/Planview'
+import Goalview from '@/components/Goalview'
+import CreateGoal from '@/components/addGoal'
 
 type Datetype = {
   id: string
   name: string
   description: string
+  created_at: string
 }
 
 export const Route = createFileRoute('/(isAuthenticated)/_auth/dashboard/')({
@@ -22,6 +23,7 @@ export const Route = createFileRoute('/(isAuthenticated)/_auth/dashboard/')({
 function RouteComponent() {
   const { data, isError, error, isPending } = useUserPlans()
 
+
   if (isError) {
     console.log("App", error)
     return (
@@ -30,6 +32,7 @@ function RouteComponent() {
       </div>
     )
   }
+
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 space-y-8">
@@ -51,12 +54,12 @@ function RouteComponent() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-md bg-white/90  border-none shadow-xl">
             <DialogTitle className="text-xl font-semibold text-center text-gray-900">
-              Create Your Plan
+              Create Your Goal
             </DialogTitle>
             <DialogDescription className="text-center text-gray-500">
-              Create a plan and stay motivated doing it
+              Create a Goal and stay motivated doing it
             </DialogDescription>
-            <CreatePlan />
+            <CreateGoal />
           </DialogContent>
         </Dialog>
       </div>
@@ -72,7 +75,7 @@ function RouteComponent() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {data && data.length > 0 ? (
             data.map((plans: Datetype) => (
-              <Planview key={plans.id} plan={plans} />
+              <Goalview key={plans.id} plan={plans} />
             ))
           ) : (
             <div className="col-span-full text-center py-16 bg-white rounded-lg shadow-sm">
