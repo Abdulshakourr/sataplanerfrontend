@@ -5,16 +5,19 @@ import { Link } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { usegoalDelete } from '@/api/hooks/hook'
 import toast from 'react-hot-toast'
-import { formatDistanceToNow } from "date-fns"; type planView = {
+import { formatDistanceToNow } from "date-fns";
+
+
+type goalView = {
   id: string
   name: string
   description: string
   created_at: string
 }
 
-export default function Goalview({ plan }: { plan: planView }) {
+export default function Goalview({ goal }: { goal: goalView }) {
   const { mutate, isSuccess, isError, error, data } = usegoalDelete()
-  const { id, name, created_at, description } = plan
+  const { id, name, created_at, description } = goal
   const queryClient = useQueryClient()
   const onDelete = () => {
     console.log("ID:", id)
@@ -37,7 +40,7 @@ export default function Goalview({ plan }: { plan: planView }) {
     <Card className="bg-white p-6 flex justify-between items-center gap-4 shadow-sm hover:shadow-md transition-shadow border border-gray-100 rounded-lg">
       <div className="space-y-1">
         <h1 className="text-xl font-semibold text-gray-900 hover:text-purple-600 transition-colors">
-          <Link to="/dashboard/plan/$planId" params={{ planId: id }}>
+          <Link to="/dashboard/plan/$goalId" params={{ goalId: id }}>
             {name}
           </Link>
         </h1>

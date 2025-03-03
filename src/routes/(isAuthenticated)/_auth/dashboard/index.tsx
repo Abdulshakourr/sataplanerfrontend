@@ -74,8 +74,8 @@ function RouteComponent() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {data && data.length > 0 ? (
-            data.map((plans: Datetype) => (
-              <Goalview key={plans.id} plan={plans} />
+            data.map((goal: Datetype) => (
+              <Goalview key={goal.id} goal={goal} />
             ))
           ) : (
             <div className="col-span-full text-center py-16 bg-white rounded-lg shadow-sm">
