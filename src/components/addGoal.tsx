@@ -7,7 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { useCreateplan } from "@/api/hooks/hook"
+import { useCreategoal } from "@/api/hooks/hook"
 import { useQueryClient } from "@tanstack/react-query"
 import toast from "react-hot-toast"
 import { DialogClose } from "@/components/ui/dialog"
@@ -25,7 +25,7 @@ export default function CreatePlan() {
     queryClient.invalidateQueries({ queryKey: ["plans"] })
   }
 
-  const { mutate, isPending, isSuccess, isError, error, data } = useCreateplan(onSuccess)
+  const { mutate, isPending, isSuccess, isError, error, data } = useCreategoal(onSuccess)
 
   const form = useForm<z.infer<typeof formScheme>>({
     resolver: zodResolver(formScheme),

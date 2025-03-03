@@ -1,6 +1,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client/client";
+import { useAuthStore } from "@/store/auth";
 
 
 
@@ -15,10 +16,13 @@ type userData = {
   email: string,
   password: string
 }
-type plan = {
+type goal = {
   name: string,
   description: string
 }
+
+const { isAuthenticated } = useAuthStore.getState()
+
 
 // user hooks
 export const useCreateUser = () => useMutation({
@@ -28,30 +32,38 @@ export const useCreateUser = () => useMutation({
 export const useLogin = () => useMutation({
   mutationFn: (userInfo: userData) => client.userLogin(userInfo)
 })
+
+export const useGetuser = (token: string) => useQuery({
+  queryKey: ["user"],
+  queryFn: () => client.getUserProfile(token),
+  enabled: isAuthenticated
+})
+
+
 //end
 //
 
 //getting and creating userData hooks
 
-export const useUserPlans = () => useQuery({
+export const useUserGoals = () => useQuery({
   queryKey: ["plans"],
-  queryFn: client.getPlans,
+  queryFn: client.getGoals,
   select: (data) => data.reverse()
 })
 
 
-export const useCreateplan = (onSuccess: () => void) => useMutation({
-  mutationFn: (plan: plan) => client.createPlan(plan),
+export const useCreategoal = (onSuccess: () => void) => useMutation({
+  mutationFn: (goal: goal) => client.createGoal(goal),
   onSuccess
 })
 
-export const useplanDelete = () => useMutation({
-  mutationFn: (id: string) => client.deletePlan(id)
+export const usegoalDelete = () => useMutation({
+  mutationFn: (id: string) => client.deleteGoal(id)
 })
 
-export const usegetPlan = (id: string) => useQuery({
-  queryKey: ["plans", id],
-  queryFn: () => client.getPlan(id)
+export const usegetGoal = (id: string) => useQuery({
+  queryKey: ["goals", id],
+  queryFn: () => client.getGoal(id)
 })
 
 
@@ -60,7 +72,7 @@ export const usegetPlan = (id: string) => useQuery({
 // motivation
 
 export const usegetMotivation = (id: string) => useQuery({
-  queryKey: ["plans", "motivation"],
+  queryKey: ["goals", "motivation"],
   queryFn: () => client.getMotivations(id)
 })
 
@@ -68,3 +80,6 @@ export const usegetMotivation = (id: string) => useQuery({
 export const usecreateMotivation = (id: string) => useMutation({
   mutationFn: (data: { link: string | undefined, quote: string | undefined }) => client.createMotivation(data, id)
 })
+
+
+//

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { createFileRoute } from '@tanstack/react-router'
 import { Plus, Search } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useUserPlans } from '@/api/hooks/hook'
+import { useUserGoals } from '@/api/hooks/hook'
 import Goalview from '@/components/Goalview'
 import CreateGoal from '@/components/addGoal'
 
@@ -21,7 +21,7 @@ export const Route = createFileRoute('/(isAuthenticated)/_auth/dashboard/')({
 })
 
 function RouteComponent() {
-  const { data, isError, error, isPending } = useUserPlans()
+  const { data, isError, error, isPending } = useUserGoals()
 
 
   if (isError) {

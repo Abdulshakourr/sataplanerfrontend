@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 import { Trash2 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { useplanDelete } from '@/api/hooks/hook'
+import { usegoalDelete } from '@/api/hooks/hook'
 import toast from 'react-hot-toast'
 import { formatDistanceToNow } from "date-fns"; type planView = {
   id: string
@@ -13,7 +13,7 @@ import { formatDistanceToNow } from "date-fns"; type planView = {
 }
 
 export default function Goalview({ plan }: { plan: planView }) {
-  const { mutate, isSuccess, isError, error, data } = useplanDelete()
+  const { mutate, isSuccess, isError, error, data } = usegoalDelete()
   const { id, name, created_at, description } = plan
   const queryClient = useQueryClient()
   const onDelete = () => {

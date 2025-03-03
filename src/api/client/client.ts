@@ -1,4 +1,4 @@
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { userDataInstance } from "./axiosInstance";
 
 
@@ -17,11 +17,9 @@ type usercreate = {
 type goal = {
   name: string,
   description: string
-  created_at: Date
 }
 
 
-console.log(BaseUrl)
 export const client = {
   async getExample() {
     const name = "abdulshakour";
@@ -74,10 +72,32 @@ export const client = {
     return data
   },
 
+
+
+
+  async getUserProfile(token: string) {
+    try {
+      const response = await axios.get(`${BaseUrl}/user/me`, {
+        headers: {
+          "Accept": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      })
+      console.log("US", response)
+      return response.data
+    } catch (error: unknown) {
+      console.log("UE", error)
+      throw new Error(error)
+    }
+  },
+
+
+
+
   //end of user
 
   // CreatePlan
-  async createPlan(goal: goal) {
+  async createGoal(goal: goal) {
     try {
       const response = await userDataInstance.post("/goals/add", goal)
       console.log("YYYY", response)
@@ -92,7 +112,7 @@ export const client = {
     }
   },
 
-  async getPlans() {
+  async getGoals() {
     try {
       const response = await userDataInstance.get("/goals/allgoals")
       return response.data
@@ -108,7 +128,7 @@ export const client = {
 
 
 
-  async getPlan(id: string) {
+  async getGoal(id: string) {
     console.log("getPlan", id)
     try {
       const response = await userDataInstance.get(`/goals/goal/${id}`)
@@ -126,9 +146,9 @@ export const client = {
 
 
 
-  async deletePlan(planId: string) {
+  async deleteGoal(goalId: string) {
     try {
-      const response = await userDataInstance.delete(`/goals/delete/${planId}`)
+      const response = await userDataInstance.delete(`/goals/delete/${goalId}`)
       return response.data
     } catch (error: unknown) {
       if (error instanceof AxiosError) {

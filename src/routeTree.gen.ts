@@ -19,6 +19,7 @@ import { Route as isAuthenticatedAuthImport } from './routes/(isAuthenticated)/_
 import { Route as QrcodenewViewPlanIndexImport } from './routes/qrcodenew/view-plan/index'
 import { Route as authSignUpIndexImport } from './routes/(auth)/sign-up/index'
 import { Route as authSignInIndexImport } from './routes/(auth)/sign-in/index'
+import { Route as isAuthenticatedAuthProfileIndexImport } from './routes/(isAuthenticated)/_auth/profile/index'
 import { Route as isAuthenticatedAuthDashboardIndexImport } from './routes/(isAuthenticated)/_auth/dashboard/index'
 import { Route as isAuthenticatedAuthDashboardPlanPlanIdImport } from './routes/(isAuthenticated)/_auth/dashboard/plan/$planId'
 
@@ -67,6 +68,13 @@ const authSignInIndexRoute = authSignInIndexImport.update({
   path: '/sign-in/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const isAuthenticatedAuthProfileIndexRoute =
+  isAuthenticatedAuthProfileIndexImport.update({
+    id: '/profile/',
+    path: '/profile/',
+    getParentRoute: () => isAuthenticatedAuthRoute,
+  } as any)
 
 const isAuthenticatedAuthDashboardIndexRoute =
   isAuthenticatedAuthDashboardIndexImport.update({
@@ -142,6 +150,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof isAuthenticatedAuthDashboardIndexImport
       parentRoute: typeof isAuthenticatedAuthImport
     }
+    '/(isAuthenticated)/_auth/profile/': {
+      id: '/(isAuthenticated)/_auth/profile/'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof isAuthenticatedAuthProfileIndexImport
+      parentRoute: typeof isAuthenticatedAuthImport
+    }
     '/(isAuthenticated)/_auth/dashboard/plan/$planId': {
       id: '/(isAuthenticated)/_auth/dashboard/plan/$planId'
       path: '/dashboard/plan/$planId'
@@ -156,12 +171,14 @@ declare module '@tanstack/react-router' {
 
 interface isAuthenticatedAuthRouteChildren {
   isAuthenticatedAuthDashboardIndexRoute: typeof isAuthenticatedAuthDashboardIndexRoute
+  isAuthenticatedAuthProfileIndexRoute: typeof isAuthenticatedAuthProfileIndexRoute
   isAuthenticatedAuthDashboardPlanPlanIdRoute: typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
 }
 
 const isAuthenticatedAuthRouteChildren: isAuthenticatedAuthRouteChildren = {
   isAuthenticatedAuthDashboardIndexRoute:
     isAuthenticatedAuthDashboardIndexRoute,
+  isAuthenticatedAuthProfileIndexRoute: isAuthenticatedAuthProfileIndexRoute,
   isAuthenticatedAuthDashboardPlanPlanIdRoute:
     isAuthenticatedAuthDashboardPlanPlanIdRoute,
 }
@@ -188,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof authSignUpIndexRoute
   '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
   '/dashboard': typeof isAuthenticatedAuthDashboardIndexRoute
+  '/profile': typeof isAuthenticatedAuthProfileIndexRoute
   '/dashboard/plan/$planId': typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
 }
 
@@ -198,6 +216,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof authSignUpIndexRoute
   '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
   '/dashboard': typeof isAuthenticatedAuthDashboardIndexRoute
+  '/profile': typeof isAuthenticatedAuthProfileIndexRoute
   '/dashboard/plan/$planId': typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
 }
 
@@ -211,6 +230,7 @@ export interface FileRoutesById {
   '/(auth)/sign-up/': typeof authSignUpIndexRoute
   '/qrcodenew/view-plan/': typeof QrcodenewViewPlanIndexRoute
   '/(isAuthenticated)/_auth/dashboard/': typeof isAuthenticatedAuthDashboardIndexRoute
+  '/(isAuthenticated)/_auth/profile/': typeof isAuthenticatedAuthProfileIndexRoute
   '/(isAuthenticated)/_auth/dashboard/plan/$planId': typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
 }
 
@@ -223,6 +243,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/qrcodenew/view-plan'
     | '/dashboard'
+    | '/profile'
     | '/dashboard/plan/$planId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -232,6 +253,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/qrcodenew/view-plan'
     | '/dashboard'
+    | '/profile'
     | '/dashboard/plan/$planId'
   id:
     | '__root__'
@@ -243,6 +265,7 @@ export interface FileRouteTypes {
     | '/(auth)/sign-up/'
     | '/qrcodenew/view-plan/'
     | '/(isAuthenticated)/_auth/dashboard/'
+    | '/(isAuthenticated)/_auth/profile/'
     | '/(isAuthenticated)/_auth/dashboard/plan/$planId'
   fileRoutesById: FileRoutesById
 }
@@ -297,6 +320,7 @@ export const routeTree = rootRoute
       "parent": "/(isAuthenticated)",
       "children": [
         "/(isAuthenticated)/_auth/dashboard/",
+        "/(isAuthenticated)/_auth/profile/",
         "/(isAuthenticated)/_auth/dashboard/plan/$planId"
       ]
     },
@@ -314,6 +338,10 @@ export const routeTree = rootRoute
     },
     "/(isAuthenticated)/_auth/dashboard/": {
       "filePath": "(isAuthenticated)/_auth/dashboard/index.tsx",
+      "parent": "/(isAuthenticated)/_auth"
+    },
+    "/(isAuthenticated)/_auth/profile/": {
+      "filePath": "(isAuthenticated)/_auth/profile/index.tsx",
       "parent": "/(isAuthenticated)/_auth"
     },
     "/(isAuthenticated)/_auth/dashboard/plan/$planId": {

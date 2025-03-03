@@ -1,5 +1,5 @@
 
-import { usegetPlan } from '@/api/hooks/hook'
+import { usegetGoal } from '@/api/hooks/hook'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -25,7 +25,7 @@ export const Route = createFileRoute('/(isAuthenticated)/_auth/dashboard/plan/$p
 
 function RouteComponent() {
   const { planId } = Route.useParams()
-  const { data, isError, error, isLoading } = usegetPlan(planId)
+  const { data, isError, error, isLoading } = usegetGoal(planId)
   const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
 
