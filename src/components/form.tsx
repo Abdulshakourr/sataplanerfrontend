@@ -133,9 +133,6 @@ export default function FormRegister({ onCreate, loading }: { loading: boolean, 
           </div>
         </div>
         <div className="mt-1 text-center text-xs">
-          <Link to="/terms" className="text-purple-600 hover:text-purple-500">Terms of Service</Link>
-          {" and "}
-          <Link to="/privacy" className="text-purple-600 hover:text-purple-500">Privacy Policy</Link>
         </div>
       </div>
     </Form>
