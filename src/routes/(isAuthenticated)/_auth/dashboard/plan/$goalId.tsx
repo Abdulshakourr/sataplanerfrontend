@@ -225,7 +225,7 @@ function RouteComponent() {
                       Add quotes or videos to stay motivated on your journey.
                     </DialogDescription>
                   </DialogHeader>
-                  <MotivationForm planId={goalId} />
+                  <MotivationForm goalId={goalId} />
                 </DialogContent>
               </Dialog>
             </div>
