@@ -19,13 +19,14 @@ import { Badge } from '@/components/ui/badge'
 import MotivationForm from '@/components/motivationForm'
 import MotivationView from '@/components/motivationView'
 
-export const Route = createFileRoute('/(isAuthenticated)/_auth/dashboard/plan/$planId')({
+export const Route = createFileRoute('/(isAuthenticated)/_auth/dashboard/plan/$goalId')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { planId } = Route.useParams()
-  const { data, isError, error, isLoading } = usegetGoal(planId)
+  const { goalId } = Route.useParams()
+  console.log("dj", goalId)
+  const { data, isError, error, isLoading } = usegetGoal(goalId)
   const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -60,7 +61,7 @@ function RouteComponent() {
 
   const generateQr = () => {
     setLoading(true)
-    userDataInstance.get(`/qrcode/generate-permanent-qr/${planId}`, {
+    userDataInstance.get(`/qrcode/generate-permanent-qr/${goalId}`, {
       responseType: "blob",
     })
       .then((data) => {
@@ -224,14 +225,14 @@ function RouteComponent() {
                       Add quotes or videos to stay motivated on your journey.
                     </DialogDescription>
                   </DialogHeader>
-                  <MotivationForm planId={planId} />
+                  <MotivationForm planId={goalId} />
                 </DialogContent>
               </Dialog>
             </div>
           </CardHeader>
 
           <CardContent className="pt-6">
-            <MotivationView id={planId} />
+            <MotivationView id={goalId} />
           </CardContent>
 
           <CardFooter className="bg-gray-50/50 border-t border-gray-100 px-6 py-4">

@@ -87,7 +87,11 @@ export const client = {
       return response.data
     } catch (error: unknown) {
       console.log("UE", error)
-      throw new Error(error)
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          throw new Error(error.response.data.detail)
+        }
+      }
     }
   },
 

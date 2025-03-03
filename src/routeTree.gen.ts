@@ -21,7 +21,7 @@ import { Route as authSignUpIndexImport } from './routes/(auth)/sign-up/index'
 import { Route as authSignInIndexImport } from './routes/(auth)/sign-in/index'
 import { Route as isAuthenticatedAuthProfileIndexImport } from './routes/(isAuthenticated)/_auth/profile/index'
 import { Route as isAuthenticatedAuthDashboardIndexImport } from './routes/(isAuthenticated)/_auth/dashboard/index'
-import { Route as isAuthenticatedAuthDashboardPlanPlanIdImport } from './routes/(isAuthenticated)/_auth/dashboard/plan/$planId'
+import { Route as isAuthenticatedAuthDashboardPlanGoalIdImport } from './routes/(isAuthenticated)/_auth/dashboard/plan/$goalId'
 
 // Create Virtual Routes
 
@@ -83,10 +83,10 @@ const isAuthenticatedAuthDashboardIndexRoute =
     getParentRoute: () => isAuthenticatedAuthRoute,
   } as any)
 
-const isAuthenticatedAuthDashboardPlanPlanIdRoute =
-  isAuthenticatedAuthDashboardPlanPlanIdImport.update({
-    id: '/dashboard/plan/$planId',
-    path: '/dashboard/plan/$planId',
+const isAuthenticatedAuthDashboardPlanGoalIdRoute =
+  isAuthenticatedAuthDashboardPlanGoalIdImport.update({
+    id: '/dashboard/plan/$goalId',
+    path: '/dashboard/plan/$goalId',
     getParentRoute: () => isAuthenticatedAuthRoute,
   } as any)
 
@@ -157,11 +157,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof isAuthenticatedAuthProfileIndexImport
       parentRoute: typeof isAuthenticatedAuthImport
     }
-    '/(isAuthenticated)/_auth/dashboard/plan/$planId': {
-      id: '/(isAuthenticated)/_auth/dashboard/plan/$planId'
-      path: '/dashboard/plan/$planId'
-      fullPath: '/dashboard/plan/$planId'
-      preLoaderRoute: typeof isAuthenticatedAuthDashboardPlanPlanIdImport
+    '/(isAuthenticated)/_auth/dashboard/plan/$goalId': {
+      id: '/(isAuthenticated)/_auth/dashboard/plan/$goalId'
+      path: '/dashboard/plan/$goalId'
+      fullPath: '/dashboard/plan/$goalId'
+      preLoaderRoute: typeof isAuthenticatedAuthDashboardPlanGoalIdImport
       parentRoute: typeof isAuthenticatedAuthImport
     }
   }
@@ -172,15 +172,15 @@ declare module '@tanstack/react-router' {
 interface isAuthenticatedAuthRouteChildren {
   isAuthenticatedAuthDashboardIndexRoute: typeof isAuthenticatedAuthDashboardIndexRoute
   isAuthenticatedAuthProfileIndexRoute: typeof isAuthenticatedAuthProfileIndexRoute
-  isAuthenticatedAuthDashboardPlanPlanIdRoute: typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
+  isAuthenticatedAuthDashboardPlanGoalIdRoute: typeof isAuthenticatedAuthDashboardPlanGoalIdRoute
 }
 
 const isAuthenticatedAuthRouteChildren: isAuthenticatedAuthRouteChildren = {
   isAuthenticatedAuthDashboardIndexRoute:
     isAuthenticatedAuthDashboardIndexRoute,
   isAuthenticatedAuthProfileIndexRoute: isAuthenticatedAuthProfileIndexRoute,
-  isAuthenticatedAuthDashboardPlanPlanIdRoute:
-    isAuthenticatedAuthDashboardPlanPlanIdRoute,
+  isAuthenticatedAuthDashboardPlanGoalIdRoute:
+    isAuthenticatedAuthDashboardPlanGoalIdRoute,
 }
 
 const isAuthenticatedAuthRouteWithChildren =
@@ -206,7 +206,7 @@ export interface FileRoutesByFullPath {
   '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
   '/dashboard': typeof isAuthenticatedAuthDashboardIndexRoute
   '/profile': typeof isAuthenticatedAuthProfileIndexRoute
-  '/dashboard/plan/$planId': typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
+  '/dashboard/plan/$goalId': typeof isAuthenticatedAuthDashboardPlanGoalIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -217,7 +217,7 @@ export interface FileRoutesByTo {
   '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
   '/dashboard': typeof isAuthenticatedAuthDashboardIndexRoute
   '/profile': typeof isAuthenticatedAuthProfileIndexRoute
-  '/dashboard/plan/$planId': typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
+  '/dashboard/plan/$goalId': typeof isAuthenticatedAuthDashboardPlanGoalIdRoute
 }
 
 export interface FileRoutesById {
@@ -231,7 +231,7 @@ export interface FileRoutesById {
   '/qrcodenew/view-plan/': typeof QrcodenewViewPlanIndexRoute
   '/(isAuthenticated)/_auth/dashboard/': typeof isAuthenticatedAuthDashboardIndexRoute
   '/(isAuthenticated)/_auth/profile/': typeof isAuthenticatedAuthProfileIndexRoute
-  '/(isAuthenticated)/_auth/dashboard/plan/$planId': typeof isAuthenticatedAuthDashboardPlanPlanIdRoute
+  '/(isAuthenticated)/_auth/dashboard/plan/$goalId': typeof isAuthenticatedAuthDashboardPlanGoalIdRoute
 }
 
 export interface FileRouteTypes {
@@ -244,7 +244,7 @@ export interface FileRouteTypes {
     | '/qrcodenew/view-plan'
     | '/dashboard'
     | '/profile'
-    | '/dashboard/plan/$planId'
+    | '/dashboard/plan/$goalId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -254,7 +254,7 @@ export interface FileRouteTypes {
     | '/qrcodenew/view-plan'
     | '/dashboard'
     | '/profile'
-    | '/dashboard/plan/$planId'
+    | '/dashboard/plan/$goalId'
   id:
     | '__root__'
     | '/'
@@ -266,7 +266,7 @@ export interface FileRouteTypes {
     | '/qrcodenew/view-plan/'
     | '/(isAuthenticated)/_auth/dashboard/'
     | '/(isAuthenticated)/_auth/profile/'
-    | '/(isAuthenticated)/_auth/dashboard/plan/$planId'
+    | '/(isAuthenticated)/_auth/dashboard/plan/$goalId'
   fileRoutesById: FileRoutesById
 }
 
@@ -321,7 +321,7 @@ export const routeTree = rootRoute
       "children": [
         "/(isAuthenticated)/_auth/dashboard/",
         "/(isAuthenticated)/_auth/profile/",
-        "/(isAuthenticated)/_auth/dashboard/plan/$planId"
+        "/(isAuthenticated)/_auth/dashboard/plan/$goalId"
       ]
     },
     "/private/": {
@@ -344,8 +344,8 @@ export const routeTree = rootRoute
       "filePath": "(isAuthenticated)/_auth/profile/index.tsx",
       "parent": "/(isAuthenticated)/_auth"
     },
-    "/(isAuthenticated)/_auth/dashboard/plan/$planId": {
-      "filePath": "(isAuthenticated)/_auth/dashboard/plan/$planId.tsx",
+    "/(isAuthenticated)/_auth/dashboard/plan/$goalId": {
+      "filePath": "(isAuthenticated)/_auth/dashboard/plan/$goalId.tsx",
       "parent": "/(isAuthenticated)/_auth"
     }
   }
