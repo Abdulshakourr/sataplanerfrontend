@@ -1,7 +1,7 @@
 import { useCreateUser } from '@/api/hooks/hook'
 import FormRegister from '@/components/form'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useNavigate, useRouter, useRouterState } from '@tanstack/react-router'
+import { useRouter } from '@tanstack/react-router'
 import { createFileRoute } from '@tanstack/react-router'
 import toast from 'react-hot-toast'
 

@@ -1,8 +1,6 @@
-
-
 import { useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useGetuser, useLogin } from '@/api/hooks/hook'
+import { useLogin } from '@/api/hooks/hook'
 import { useAuthStore } from '@/store/auth'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import toast from 'react-hot-toast'

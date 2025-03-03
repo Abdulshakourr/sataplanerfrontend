@@ -26,24 +26,28 @@ const formSchema = z.object({
 })
 type FormValues = z.infer<typeof formSchema>
 
-export default function MotivationForm({ planId }: { planId: string }) {
+export default function MotivationForm({ goalId }: { goalId: string }) {
   const [activeTab, setActiveTab] = useState<"video" | "quote">("video")
   const {
     register,
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   })
   const queryClient = useQueryClient()
-  const { mutate, isPending, isError, data, error, isSuccess } = usecreateMotivation(planId)
+  const { mutate, isPending, isError, data, error, isSuccess } = usecreateMotivation(goalId)
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      console.log("Submitting:", { ...data, planId })
-      mutate(data)
+      mutate({
+        link: data.link ?? undefined,
+        quote: data.quote ?? undefined,
+      })
+
+
       toast({
         title: "Motivation submitted successfully!",
         description: data.link
