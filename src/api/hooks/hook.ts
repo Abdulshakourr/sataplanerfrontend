@@ -46,7 +46,7 @@ export const useGetuser = (token: string) => useQuery({
 //getting and creating userData hooks
 
 export const useUserGoals = () => useQuery({
-  queryKey: ["plans"],
+  queryKey: ["goals"],
   queryFn: client.getGoals,
   select: (data) => data.reverse()
 })

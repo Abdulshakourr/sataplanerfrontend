@@ -70,7 +70,7 @@ export default function MotivationForm({ goalId }: { goalId: string }) {
   }
 
   if (isSuccess) {
-    queryClient.invalidateQueries({ queryKey: ["plans", "motivation"] })
+    queryClient.invalidateQueries({ queryKey: ["goals", "motivation"] })
     console.log("DAT", data)
   }
 

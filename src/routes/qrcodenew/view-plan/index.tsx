@@ -8,7 +8,7 @@ import axios from 'axios'
 import { z } from "zod"
 import Motivateview from '@/components/privateMotivationView'
 
-const Base_URL = "http://localhost:8000"
+const Base_URL = import.meta.env.VITE_BASE_URL
 
 export const Route = createFileRoute('/qrcodenew/view-plan/')({
   component: RouteComponent,

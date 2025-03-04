@@ -30,7 +30,7 @@ export default function Goalview({ goal }: { goal: goalView }) {
     toast.error(error.message)
   }
   if (isSuccess) {
-    queryClient.invalidateQueries({ queryKey: ["plans"] })
+    queryClient.invalidateQueries({ queryKey: ["goals"] })
   }
   if (data) {
     console.log("su", data)
