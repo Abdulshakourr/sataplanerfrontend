@@ -18,7 +18,7 @@ export const Route = createFileRoute('/private/')({
   }),
 })
 
-const Base_URL = "http://localhost:8000"
+const Base_URL = import.meta.env.VITE_BASE_URL
 
 const formSchema = z.object({
   password: z.string()
