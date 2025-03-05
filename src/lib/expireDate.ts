@@ -3,9 +3,9 @@
 
 
 
-export default function expireDate(date: Date) {
+export default function expireDate(date: number) {
 
 
-  const expire = new Date(date.getTime() + 4 * 60 * 1000)
+  const expire = new Date(new Date().getTime() + date * 1000)
   return expire
 }

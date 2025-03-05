@@ -22,7 +22,7 @@ export default function CreatePlan() {
   const queryClient = useQueryClient()
 
   const onSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ["plans"] })
+    queryClient.invalidateQueries({ queryKey: ["goals"] })
   }
 
   const { mutate, isPending, isSuccess, isError, error, data } = useCreategoal(onSuccess)

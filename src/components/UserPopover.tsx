@@ -3,13 +3,15 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Button } from '@/components/ui/button'
 import { LogOut, User } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { useAuthStore } from '@/store/auth'
 
 interface UserData {
   username: string
   email: string
 }
 
-export function UserPopover({ data, SignOut }: { data: UserData, SignOut: () => void }) {
+export function UserPopover({ data, }: { data: UserData }) {
+  const { SignOut } = useAuthStore()
   return (
     <Popover>
       <PopoverTrigger asChild>
