@@ -37,7 +37,7 @@ export default function Goalview({ goal }: { goal: goalView }) {
     <Card className="bg-white p-6 flex justify-between items-center gap-4 shadow-sm hover:shadow-md transition-shadow border border-gray-100 rounded-lg">
       <div className="space-y-1">
         <h1 className="text-xl font-semibold text-gray-900 hover:text-purple-600 transition-colors">
-          <Link to="/dashboard/plan/$goalId" params={{ goalId: id }}>
+          <Link to="/dashboard/goal/$goalId" params={{ goalId: id }}>
             {name}
           </Link>
         </h1>
