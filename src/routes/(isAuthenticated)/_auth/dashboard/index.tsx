@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useUserGoals } from '@/api/hooks/hook'
 import Goalview from '@/components/Goalview'
 import CreateGoal from '@/components/addGoal'
+import { useState } from 'react'
 
 type Datetype = {
   id: string
@@ -22,8 +23,7 @@ export const Route = createFileRoute('/(isAuthenticated)/_auth/dashboard/')({
 
 function RouteComponent() {
   const { data, isError, error, isPending } = useUserGoals()
-
-
+  const [open, setOpen] = useState(false)
   if (isError) {
     console.log("App", error)
     return (
@@ -45,7 +45,7 @@ function RouteComponent() {
             className="pl-10 h-12 bg-white border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 rounded-lg transition-all"
           />
         </div>
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="h-12 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all gap-2">
               <Plus className="h-4 w-4" />
@@ -59,7 +59,7 @@ function RouteComponent() {
             <DialogDescription className="text-center text-gray-500">
               Create a Goal and stay motivated doing it
             </DialogDescription>
-            <CreateGoal />
+            <CreateGoal onOpen={setOpen} />
           </DialogContent>
         </Dialog>
       </div>

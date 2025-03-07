@@ -22,15 +22,15 @@ userDataInstance.interceptors.request.use(async (config) => {
   console.log("isj", expireTime && new Date(expireTime) >= currentTime)
   console.log("isj", expireTime && new Date(expireTime) <= currentTime)
 
-  const isExpire = expireTime && new Date(expireTime) >= currentTime
+  const isExpire = expireTime && new Date(expireTime) <= currentTime
 
-  if (false) {
+  if (isExpire) {
     console.log("Hi....")
   }
 
 
   // Check if token is expired
-  if (!isExpire) {
+  if (expireTime && new Date(expireTime) <= currentTime) {
     console.log("Token expired. Refreshing...");
 
     try {

@@ -32,9 +32,6 @@ export default function Goalview({ goal }: { goal: goalView }) {
   if (isSuccess) {
     queryClient.invalidateQueries({ queryKey: ["goals"] })
   }
-  if (data) {
-    console.log("su", data)
-  }
 
   return (
     <Card className="bg-white p-6 flex justify-between items-center gap-4 shadow-sm hover:shadow-md transition-shadow border border-gray-100 rounded-lg">
@@ -45,7 +42,7 @@ export default function Goalview({ goal }: { goal: goalView }) {
           </Link>
         </h1>
         <p className="text-sm text-gray-600 line-clamp-2">{description}</p>
-        <p className='text-sm pt-3 italic text-gray-300'>  {formatDistanceToNow(new Date(created_at + "Z"), { addSuffix: true })}</p>
+        <p className='text-sm pt-3 italic text-gray-300'>  {formatDistanceToNow(new Date(created_at), { addSuffix: true })}</p>
       </div>
       <button
         onClick={onDelete}

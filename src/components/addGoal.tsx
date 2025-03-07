@@ -18,7 +18,7 @@ const formScheme = z.object({
   description: z.string().min(5, { message: "Plan description should be at least 5 characters" }),
 })
 
-export default function CreatePlan() {
+export default function CreateGoal({ onOpen }: { onOpen: (value: boolean) => void }) {
   const queryClient = useQueryClient()
 
   const onSuccess = () => {
@@ -48,6 +48,7 @@ export default function CreatePlan() {
     if (data) {
       console.log("dddddddd", data)
       toast.success(data.message)
+      onOpen(false)
     }
   }, [isSuccess])
 

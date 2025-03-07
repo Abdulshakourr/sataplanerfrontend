@@ -19,7 +19,7 @@ import { Badge } from '@/components/ui/badge'
 import MotivationForm from '@/components/motivationForm'
 import MotivationView from '@/components/motivationView'
 
-export const Route = createFileRoute('/(isAuthenticated)/_auth/dashboard/plan/$goalId')({
+export const Route = createFileRoute('/(isAuthenticated)/_auth/dashboard/goal/$goalId')({
   component: RouteComponent,
 })
 
