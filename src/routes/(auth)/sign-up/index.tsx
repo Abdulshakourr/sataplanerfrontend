@@ -47,7 +47,7 @@ function RouteComponent() {
           <CardHeader className="pb-0">
             <CardTitle>
               <div className="text-center">
-                <h1 className="text-3xl font-bold text-purple-600">
+                <h1 className="text-3xl font-bold text-goal-600">
                   Join Us Today
                 </h1>
                 <p className="mt-1 text-sm text-gray-500">

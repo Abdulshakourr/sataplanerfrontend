@@ -1,33 +1,29 @@
-import expireDate from "@/lib/expireDate"
-import { useAuthStore } from "@/store/auth"
-import axios from "axios"
+import expireDate from "@/lib/expireDate";
+import { useAuthStore } from "@/store/auth";
+import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL
-
-
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const userDataInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
-    "Accept": "application/json",
-  }
-})
-
+    Accept: "application/json",
+  },
+});
 
 userDataInstance.interceptors.request.use(async (config) => {
-  const { access_token, refresh_token, expireTime, setToken } = useAuthStore.getState();
+  const { access_token, refresh_token, expireTime, setToken } =
+    useAuthStore.getState();
 
   const currentTime = new Date();
-  console.log("isj", expireTime && new Date(expireTime) >= currentTime)
-  console.log("isj", expireTime && new Date(expireTime) <= currentTime)
+  console.log("isjone", expireTime && new Date(expireTime) >= currentTime);
+  console.log("isjtwo", expireTime && new Date(expireTime) <= currentTime);
 
-  const isExpire = expireTime && new Date(expireTime) <= currentTime
+  const isExpire = expireTime && new Date(expireTime) <= currentTime;
 
   if (isExpire) {
-    console.log("Hi....")
+    console.log("Hi....");
   }
-
 
   // Check if token is expired
   if (expireTime && new Date(expireTime) <= currentTime) {
@@ -35,10 +31,11 @@ userDataInstance.interceptors.request.use(async (config) => {
 
     try {
       // Send refresh request
-      const response = await axios.post(`${BASE_URL}/auth/refresh?refresh_token=${refresh_token}`);
+      const response = await axios.post(
+        `${BASE_URL}/auth/refresh?refresh_token=${refresh_token}`,
+      );
 
-      console.log("ref", response.data)
-
+      console.log("ref", response.data);
 
       // access_token_expires_in
       // Get new token and expiry time
@@ -68,4 +65,3 @@ userDataInstance.interceptors.request.use(async (config) => {
 
   return config;
 });
-
