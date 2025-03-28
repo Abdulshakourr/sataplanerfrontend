@@ -98,22 +98,16 @@ function RouteComponent() {
         </div>
         {/* Goals Section */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-goal-800 mb-6">Your Goals</h2>
+          <h2 className="text-2xl font-medium italic text-gray-400  font-serif text-start ">
+            Resent Goals
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/*   {sampleGoals.map((goal) => ( */}
-            {/*     <GoalCard key={goal.id} goal={goal} /> */}
-            {/*   ))} */}
+            {/* {sampleGoals.map((goal) => ( */}
+            {/*   <GoalCard key={goal.id} goal={goal} /> */}
+            {/* ))} */}
+            <h1>so what </h1>
           </div>
         </section>
-        {/* Create New Goal Button (Mobile) */}
-        <div className="fixed bottom-6 right-6 md:hidden">
-          <Link to="/new-goal">
-            <Button size="lg" className="rounded-full shadow-lg">
-              <Plus size={20} />
-              <span className="ml-2">New Goal</span>
-            </Button>
-          </Link>
-        </div>
       </motion.div>
     </div>
   );

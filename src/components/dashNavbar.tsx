@@ -13,10 +13,10 @@ export default function Navbar() {
   return (
     <nav
       className={cn(
-        "sticky top-0 z-50 py-3 px-4 border-b backdrop-blur-lg transition-all duration-300",
+        " sm:hidden sticky top-0 z-50 py-3 px-4 border-b backdrop-blur-lg transition-all duration-300",
       )}
     >
-      <div className="flex items-center justify-between ">
+      <div className="flex items-center justify-end ">
         {/* Mobile Navigation */}
         <div className="sm:hidden">
           <Sheet>

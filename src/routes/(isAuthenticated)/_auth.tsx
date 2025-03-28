@@ -36,7 +36,6 @@ function Auth() {
         <DashboardSidebar />
         <main className="flex-1  ml-0 md:ml-56">
           <Navbar />
-
           <Outlet />
         </main>
       </div>
