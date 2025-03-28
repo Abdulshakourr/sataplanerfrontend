@@ -8,11 +8,13 @@ type usercreate = {
   email: string;
   password: string;
 };
-
 type goal = {
-  name: string;
-  description: string;
-};
+  name: string,
+  description: string
+  status: string
+  due_date: Date
+  cover_image: File | null
+}
 
 export const client = {
   async getExample() {
@@ -85,19 +87,15 @@ export const client = {
 
   //end of user
 
-  // CreatePlan
-  async createGoal(goal: goal) {
+  // CreateGoal
+  async createGoal(formData: FormData) {
     try {
-      const response = await userDataInstance.post("/goals/add", goal);
-      console.log("YYYY", response);
+      const response = await userDataInstance.post(`/goals/add`, formData, {
+      });
       return response.data;
-    } catch (error: unknown) {
-      console.log("EEEEEEE", error);
-      if (error instanceof AxiosError) {
-        if (error.response) {
-          throw new Error(error.response.data.detail);
-        }
-      }
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
   },
 

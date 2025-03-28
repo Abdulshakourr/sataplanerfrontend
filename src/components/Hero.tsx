@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { ArrowRight } from "lucide-react";
 import AnimatedText from "./ui/AnimatedText.tsx";
 import Button from "./ui/button-custom";
+import { Link } from "@tanstack/react-router";
 
 const Hero: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -39,10 +39,14 @@ const Hero: React.FC = () => {
       speedY: number;
       color: string;
       opacity: number;
+      canvasWidth: number;
+      canvasHeight: number;
 
       constructor(canvas: HTMLCanvasElement) {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
+        this.canvasWidth = canvas.width;
+        this.canvasHeight = canvas.height;
+        this.x = Math.random() * this.canvasWidth;
+        this.y = Math.random() * this.canvasHeight;
         this.size = Math.random() * 3 + 1;
         this.speedX = (Math.random() - 0.5) * 0.3;
         this.speedY = (Math.random() - 0.5) * 0.3;
@@ -54,11 +58,11 @@ const Hero: React.FC = () => {
         this.x += this.speedX;
         this.y += this.speedY;
 
-        if (this.x < 0 || this.x > canvas.width) {
+        if (this.x < 0 || this.x > this.canvasWidth) {
           this.speedX = -this.speedX;
         }
 
-        if (this.y < 0 || this.y > canvas.height) {
+        if (this.y < 0 || this.y > this.canvasHeight) {
           this.speedY = -this.speedY;
         }
       }
@@ -102,6 +106,8 @@ const Hero: React.FC = () => {
     }
 
     function animate() {
+      if (!ctx || !canvas) return; // Safety check
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (const particle of particles) {
@@ -162,16 +168,8 @@ const Hero: React.FC = () => {
             className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up"
             style={{ animationDelay: "600ms" }}
           >
-            <Button
-              size="lg"
-              icon={<ArrowRight size={20} />}
-              className="shadow-lg shadow-goal-400/20"
-            >
-              Get Started
-            </Button>
-
-            <Button variant="outline" size="lg">
-              Learn More
+            <Button size="lg" className=" text-xl shadow-lg shadow-goal-400/20">
+              <Link to="/sign-up"> Get Started</Link>
             </Button>
           </div>
 
@@ -191,9 +189,9 @@ const Hero: React.FC = () => {
                     GOALSET - Dashboard
                   </div>
                 </div>
-                <div className="bg-goal-50/30 h-60 sm:h-80 rounded-b-md flex items-center justify-center">
-                  <div className="text-goal-400 animate-pulse">
-                    App Dashboard Preview
+                <div className="bg-goal-50/30 max-h-60 h-full sm:max-h-[450px] rounded-b-md overflow-hidden flex items-center justify-center">
+                  <div className="w-full h-full  ">
+                    <img src="/dashboard.png" className="cover" />
                   </div>
                 </div>
               </div>

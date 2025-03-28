@@ -1,14 +1,6 @@
 import React, { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import {
-  Target,
-  Sparkles,
-  LineChart,
-  QrCode,
-  Settings,
-  ChevronRight,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Target, Sparkles, LineChart, QrCode, Settings } from "lucide-react";
 import AnimatedText from "../ui/AnimatedText";
 
 interface FeatureCardProps {
@@ -48,17 +40,6 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 
         <h3 className="text-xl font-semibold text-goal-900 mb-2">{title}</h3>
         <p className="text-goal-600 mb-4 text-pretty">{description}</p>
-
-        {/* <a */}
-        {/*   href="#" */}
-        {/*   className="inline-flex items-center text-goal-600 font-medium hover:text-goal-800 transition-colors" */}
-        {/* > */}
-        {/*   Learn more */}
-        {/*   <ChevronRight */}
-        {/*     size={16} */}
-        {/*     className="ml-1 transform group-hover:translate-x-1 transition-transform duration-200" */}
-        {/*   /> */}
-        {/* </a> */}
       </div>
     </motion.div>
   );

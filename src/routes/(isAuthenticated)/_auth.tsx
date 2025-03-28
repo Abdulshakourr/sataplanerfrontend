@@ -1,3 +1,5 @@
+import DashboardSidebar from "@/components/dashboarComponents/DashboardSidebar";
+import Navbar from "@/components/dashNavbar";
 import { useAuthStore } from "@/store/auth";
 import {
   createFileRoute,
@@ -30,8 +32,14 @@ function Auth() {
 
   return (
     <>
-      <h1>Hello what are you doing Here</h1>
-      <Outlet />
+      <div className=" flex min-h-screen bg-gray-50">
+        <DashboardSidebar />
+        <main className="flex-1  ml-0 md:ml-56">
+          <Navbar />
+
+          <Outlet />
+        </main>
+      </div>
     </>
   );
 }

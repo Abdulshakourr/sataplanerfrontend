@@ -1,4 +1,3 @@
-
 import { usegetGoal } from '@/api/hooks/hook'
 import { Button } from '@/components/ui/button'
 import {
@@ -7,54 +6,53 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
   DialogTrigger
 } from '@/components/ui/dialog'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Plus, Quote, Download, QrCode, ArrowLeft } from 'lucide-react'
+import { Quote, ArrowLeft, Calendar, Check, Clock, Edit, Share2, Target } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { userDataInstance } from '@/api/client/axiosInstance'
 import { useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import MotivationForm from '@/components/motivationForm'
-import MotivationView from '@/components/motivationView'
+import { toast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
+import { Input } from '@/components/ui/input'
 
 export const Route = createFileRoute('/(isAuthenticated)/_auth/dashboard/goal/$goalId')({
   component: RouteComponent,
 })
 
+interface Motivation {
+  id: number
+  type: 'quote' | 'link'
+  content: string
+}
+
 function RouteComponent() {
   const { goalId } = Route.useParams()
-  console.log("dj", goalId)
   const { data, isError, error, isLoading } = usegetGoal(goalId)
-  const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false)
+  const [newMotivation, setNewMotivation] = useState('')
+  const [motivationType, setMotivationType] = useState<'quote' | 'link'>('quote')
+  const [motivations, setMotivations] = useState<Motivation[]>([
+    { id: 1, type: 'quote', content: '"The only limit is the one you set yourself"' },
+    { id: 2, type: 'link', content: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }
+  ])
 
   if (isError) {
-    console.log("idplan", error)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
-        <Card className="w-full max-w-md border-none shadow-lg bg-white/90 backdrop-blur-sm p-6">
-          <div className="text-center space-y-4">
-            <div className="bg-red-100 text-red-600 p-3 rounded-full inline-flex">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900">Error Loading Plan</h2>
-            <p className="text-gray-500">We couldn’t load the plan details. Please try again.</p>
-            <Button
-              variant="outline"
-              asChild
-              className="mt-4 h-11 px-6 border-gray-200 text-gray-700 hover:bg-gray-100 rounded-lg transition-all"
-            >
-              <Link to="/dashboard">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Return to Dashboard
-              </Link>
-            </Button>
-          </div>
-        </Card>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-medium">Goal Not Found</h1>
+          <p className="text-muted-foreground">The goal you're looking for doesn't exist</p>
+          <Button asChild>
+            <Link to="/dashboard">Back to Dashboard</Link>
+          </Button>
+        </div>
+
       </div>
     )
   }
@@ -64,10 +62,13 @@ function RouteComponent() {
     userDataInstance.get(`/qrcode/generate-permanent-qr/${goalId}`, {
       responseType: "blob",
     })
-      .then((data) => {
-        const url = URL.createObjectURL(data.data)
+      .then(() => {
         setLoading(false)
-        setUrl(url)
+        toast({
+          title: "QR Code Generated",
+          description: "Share this goal with others using the QR code",
+        })
+        setIsShareDialogOpen(false)
       })
       .catch((err) => {
         console.error("QR generation failed:", err)
@@ -75,172 +76,356 @@ function RouteComponent() {
       })
   }
 
+  const handleCompleteGoal = () => {
+    toast({
+      title: "Goal Completed",
+      description: "Congratulations on achieving your goal!",
+    })
+  }
+
+  const handleAddMotivation = () => {
+    if (!newMotivation.trim()) {
+      toast({
+        title: "Empty Motivation",
+        description: "Please add some content",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setMotivations([
+      ...motivations,
+      {
+        id: motivations.length + 1,
+        type: motivationType,
+        content: newMotivation
+      }
+    ])
+
+    toast({
+      title: "Motivation Added",
+      description: "Your motivation has been saved",
+    })
+    setNewMotivation('')
+  }
+
+  const renderMotivationItem = (motivation: Motivation) => {
+    if (motivation.type === 'quote') {
+      return (
+        <Card key={motivation.id} className="border-0 shadow-none bg-muted/10 hover:bg-muted/20 transition-colors">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <Quote className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+              <p className="text-sm">"{motivation.content}"</p>
+            </div>
+          </CardContent>
+        </Card>
+      )
+    } else {
+      // Extract YouTube video ID
+      const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|youtu\.be\/)([^"&?\/\s]{11}))/
+      const match = motivation.content.match(youtubeRegex)
+      const videoId = match ? match[1] : null
+
+      return (
+        <Card key={motivation.id} className="border-0 shadow-none bg-muted/10 hover:bg-muted/20 transition-colors">
+          <CardContent className="p-0 overflow-hidden rounded-lg">
+            {videoId ? (
+              <div className="aspect-video">
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  className="w-full h-full"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <div className="p-4">
+                <div className="flex items-center gap-3">
+                  <Share2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                  <a
+                    href={motivation.content}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline break-all"
+                  >
+                    {motivation.content}
+                  </a>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )
+    }
+  }
+
+  const isOverdue = data?.status === 'ACTIVE' && new Date(data?.due_date) < new Date()
+  const daysRemaining = data?.due_date
+    ? Math.ceil((new Date(data.due_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : 0
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto space-y-8">
-        {/* Header with navigation and actions */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <Button
-            variant="ghost"
-            asChild
-            className="gap-2 px-0 text-gray-700 hover:text-purple-600 transition-colors"
-          >
-            <Link to="/dashboard" className="flex items-center">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              <span>Back to Dashboard</span>
-            </Link>
-          </Button>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="space-y-8"
+        >
+          {/* Header */}
+          <div className="flex items-start justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground"
+              asChild
+            >
+              <Link to="/dashboard">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Link>
+            </Button>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                size="lg"
-                className="h-11 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all gap-2"
-              >
-                <QrCode className="h-4 w-4" />
-                Generate QR Code
+            <div className="flex gap-2">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to={`/dashboard/goal/${goalId}/edit`}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Link>
               </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md bg-white/90 backdrop-blur-sm border-none shadow-xl">
-              <DialogHeader>
-                <DialogTitle className="text-xl font-semibold text-center text-gray-900">
-                  QR Code Generator
-                </DialogTitle>
-                <DialogDescription className="text-center text-gray-500 max-w-sm mx-auto">
-                  Generate a QR code for quick access to this plan. Scan or download it.
-                </DialogDescription>
-              </DialogHeader>
+              <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Share
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Share Goal</DialogTitle>
+                    <DialogDescription>
+                      Generate a QR code to share this goal with others
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex justify-center py-4">
+                    <Target className="h-12 w-12 text-primary" />
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={generateQr} isLoading={loading}>
+                      Generate QR Code
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
 
-              <div className="flex flex-col items-center justify-center p-6">
-                <div className="h-64 w-64 my-4 border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center bg-gray-50">
-                  {url ? (
-                    <img src={url} alt="QR Code" className="h-60 w-60 object-contain" />
+          {/* Goal Title */}
+          <div className="space-y-2">
+            <h1 className="text-3xl font-medium tracking-tight">
+              {isLoading ? <Skeleton className="h-9 w-64" /> : data?.name}
+            </h1>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              {data?.status === 'ACTIVE' && data?.due_date && (
+                <>
+                  <Clock className="h-4 w-4" />
+                  <span className={isOverdue ? "text-destructive" : ""}>
+                    {isOverdue
+                      ? 'Overdue'
+                      : `${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'} remaining`
+                    }
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Cover Image */}
+              <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+                {data?.cover_image ? (
+                  <img
+                    src={data.cover_image}
+                    alt={data.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Target className="h-12 w-12 text-muted-foreground" />
+                  </div>
+                )}
+              </div>
+
+              {/* Description */}
+              <Card className="border-0 shadow-none">
+                <CardContent className="p-0">
+                  <h2 className="text-lg font-medium mb-4">Description</h2>
+                  {isLoading ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-4/6" />
+                    </div>
                   ) : (
-                    <div className="text-center p-4">
-                      <QrCode className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                      <span className="text-sm text-gray-500">QR code will appear here</span>
+                    <p className="text-muted-foreground">
+                      {data?.description || "No description available"}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Enhanced Motivation Section */}
+              <div className="space-y-4">
+                <h2 className="text-lg font-medium">Motivation</h2>
+
+                {/* Motivations List */}
+                <div className="space-y-3">
+                  {motivations.length > 0 ? (
+                    motivations.map(renderMotivationItem)
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Quote className="mx-auto h-8 w-8 mb-2" />
+                      <p>No motivations added yet</p>
                     </div>
                   )}
                 </div>
 
-                {loading && (
-                  <div className="flex items-center justify-center gap-2 text-purple-600 mt-2">
-                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Generating...</span>
-                  </div>
-                )}
+                {/* Add New Motivation */}
+                <Card className="border-0 shadow-none">
+                  <CardContent className="p-4">
+                    <div className="space-y-4">
+                      <div className="flex gap-2">
+                        <Button
+                          variant={motivationType === 'quote' ? 'default' : 'ghost'}
+                          size="sm"
+                          onClick={() => setMotivationType('quote')}
+                        >
+                          <Quote className="h-4 w-4 mr-2" />
+                          Quote
+                        </Button>
+                        <Button
+                          variant={motivationType === 'link' ? 'default' : 'ghost'}
+                          size="sm"
+                          onClick={() => setMotivationType('link')}
+                        >
+                          <Share2 className="h-4 w-4 mr-2" />
+                          Video/Link
+                        </Button>
+                      </div>
 
-                {!url ? (
-                  <Button
-                    onClick={generateQr}
-                    className="mt-4 h-11 px-6 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all"
-                    disabled={loading}
-                  >
-                    {loading ? "Generating..." : "Generate QR Code"}
-                  </Button>
-                ) : (
-                  <Button
-                    asChild
-                    className="mt-4 h-11 px-6 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all gap-2"
-                  >
-                    <a href={url} download="plan-qrcode.png">
-                      <Download className="h-4 w-4" />
-                      Download
-                    </a>
-                  </Button>
-                )}
+                      {motivationType === 'quote' ? (
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Add an inspiring quote..."
+                            value={newMotivation}
+                            onChange={(e) => setNewMotivation(e.target.value)}
+                          />
+                          <Button
+                            variant="outline"
+                            onClick={handleAddMotivation}
+                            disabled={!newMotivation.trim()}
+                          >
+                            Add Quote
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <Input
+                            placeholder="Paste a YouTube or video link..."
+                            value={newMotivation}
+                            onChange={(e) => setNewMotivation(e.target.value)}
+                          />
+                          <div className="flex justify-between items-center">
+                            <p className="text-xs text-muted-foreground">
+                              Supports YouTube, Vimeo, and other embeddable links
+                            </p>
+                            <Button
+                              variant="outline"
+                              onClick={handleAddMotivation}
+                              disabled={!newMotivation.trim()}
+                            >
+                              Add Video
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        {/* Plan Details Card */}
-        <Card className="bg-white/90 backdrop-blur-sm border-none shadow-lg rounded-xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-transparent border-b border-gray-100 pb-6">
-            {isLoading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-8 w-3/4 bg-gray-200" />
-                <Skeleton className="h-4 w-1/2 bg-gray-200" />
-              </div>
-            ) : (
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Badge className="bg-purple-100 text-purple-700 border-purple-200 px-3 py-1 font-medium">
-                    Goal
-                  </Badge>
-                </div>
-                <CardTitle className="text-2xl sm:text-3xl font-semibold text-gray-900">
-                  {data?.name}
-                </CardTitle>
-              </div>
-            )}
-          </CardHeader>
-
-          <CardContent className="pt-6">
-            {isLoading ? (
-              <div className="space-y-3">
-                <Skeleton className="h-4 w-full bg-gray-200" />
-                <Skeleton className="h-4 w-5/6 bg-gray-200" />
-                <Skeleton className="h-4 w-4/6 bg-gray-200" />
-              </div>
-            ) : (
-              <p className="text-gray-600 leading-relaxed">
-                {data?.description || "No description available for this plan."}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Motivation Section */}
-        <Card className="bg-white/90 backdrop-blur-sm border-none shadow-lg rounded-xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-transparent border-b border-gray-100">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-purple-100 p-2 rounded-full">
-                  <Quote className="h-5 w-5 text-purple-600" />
-                </div>
-                <CardTitle className="text-xl font-semibold text-gray-900">Motivations</CardTitle>
-              </div>
-
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="h-11 px-4 border-gray-200 text-gray-700 hover:bg-gray-100 rounded-lg transition-all gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span className="hidden sm:inline">Add Motivation</span>
-                    <span className="sm:hidden">Add</span>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-white/90 backdrop-blur-sm border-none shadow-xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-xl font-semibold text-center text-gray-900">
-                      Add New Motivation
-                    </DialogTitle>
-                    <DialogDescription className="text-center text-gray-500 max-w-sm mx-auto">
-                      Add quotes or videos to stay motivated on your journey.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <MotivationForm goalId={goalId} />
-                </DialogContent>
-              </Dialog>
             </div>
-          </CardHeader>
 
-          <CardContent className="pt-6">
-            <MotivationView id={goalId} />
-          </CardContent>
+            {/* Sidebar */}
+            <div className="space-y-4">
+              {/* Status */}
+              <Card className="border-0 shadow-none">
+                <CardContent className="p-0">
+                  <h3 className="text-lg font-medium mb-4">Status</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Status</span>
+                      <span className={cn(
+                        "text-xs px-2 py-1 rounded-full",
+                        data?.status === 'COMPLETED'
+                          ? "bg-green-500/10 text-green-600"
+                          : "bg-primary/10 text-primary"
+                      )}>
+                        {data?.status}
+                      </span>
+                    </div>
 
-          <CardFooter className="bg-gray-50/50 border-t border-gray-100 px-6 py-4">
-            <p className="text-sm text-gray-500 italic">
-              "Stay inspired by adding motivational content regularly."
-            </p>
-          </CardFooter>
-        </Card>
+                    {data?.due_date && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Due Date</span>
+                        <span className="text-sm">
+                          {new Date(data.due_date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Actions */}
+              <Card className="border-0 shadow-none">
+                <CardContent className="p-0">
+                  <h3 className="text-lg font-medium mb-4">Actions</h3>
+                  <div className="space-y-2">
+                    {data?.status === 'ACTIVE' ? (
+                      <>
+                        <Button
+                          variant="default"
+                          className="w-full"
+                          onClick={handleCompleteGoal}
+                        >
+                          <Check className="h-4 w-4 mr-2" />
+                          Complete Goal
+                        </Button>
+                        <Button variant="outline" className="w-full">
+                          Update Progress
+                        </Button>
+                      </>
+                    ) : (
+                      <Button variant="default" className="w-full" disabled>
+                        <Check className="h-4 w-4 mr-2" />
+                        Completed
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   )

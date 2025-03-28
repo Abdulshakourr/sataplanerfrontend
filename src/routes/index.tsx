@@ -59,7 +59,6 @@ export default function Home() {
         className="min-h-screen flex flex-col"
       >
         <NavBar />
-
         <main className="flex-grow">
           <Hero />
           <Features />
@@ -67,7 +66,6 @@ export default function Home() {
           <Testimonials />
           <CTA />
         </main>
-
         <Footer />
       </motion.div>
     </AnimatePresence>

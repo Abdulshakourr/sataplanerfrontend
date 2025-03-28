@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
 import AnimatedText from "../ui/AnimatedText";
 import Button from "../ui/button-custom";
+import { Link } from "@tanstack/react-router";
 
 const benefits = [
   "Proven results from thousands of users",
@@ -70,7 +71,7 @@ const CTA: React.FC = () => {
                 icon={<ArrowRight size={20} />}
                 className="shadow-lg shadow-goal-400/20"
               >
-                Sign Up For Free
+                <Link to="/sign-up"> Sign Up For Free</Link>
               </Button>
             </div>
 
@@ -102,28 +103,6 @@ const CTA: React.FC = () => {
                           step."
                         </p>
                         <p className="text-xs text-goal-500 mt-1">– Lao Tzu</p>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-green-500" />
-                        <div className="text-sm text-goal-700">
-                          Daily goal completed!
-                        </div>
-                      </div>
-
-                      <div className="bg-white rounded-lg shadow-sm p-3">
-                        <div className="text-xs text-goal-500 mb-1">
-                          Learn Spanish
-                        </div>
-                        <div className="w-full h-2 bg-goal-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-goal-600 rounded-full"
-                            style={{ width: "75%" }}
-                          />
-                        </div>
-                        <div className="text-xs text-goal-500 mt-1 text-right">
-                          75%
-                        </div>
                       </div>
                     </div>
                   </div>

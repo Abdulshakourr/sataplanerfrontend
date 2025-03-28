@@ -16,18 +16,25 @@ userDataInstance.interceptors.request.use(async (config) => {
     useAuthStore.getState();
 
   const currentTime = new Date();
-  console.log("isjone", expireTime && new Date(expireTime) >= currentTime);
-  console.log("isjtwo", expireTime && new Date(expireTime) <= currentTime);
+  console.log("Current time:", currentTime);
+  console.log("Token expires at:", expireTime,);
+if(expireTime){
+  
+  console.log("Token expires at local:", new Date(expireTime));
+}
 
-  const isExpire = expireTime && new Date(expireTime) <= currentTime;
 
-  if (isExpire) {
-    console.log("Hi....");
-  }
+  console.log("Is token expired?", expireTime && new Date(expireTime) <= currentTime);
 
   // Check if token is expired
   if (expireTime && new Date(expireTime) <= currentTime) {
-    console.log("Token expired. Refreshing...");
+    console.log("Token expired. Attempting to refresh...");
+
+    if (!refresh_token) {
+      console.error("No refresh token available");
+      useAuthStore.getState().SignOut();
+      return Promise.reject(new Error("No refresh token available"));
+    }
 
     try {
       // Send refresh request
@@ -35,15 +42,21 @@ userDataInstance.interceptors.request.use(async (config) => {
         `${BASE_URL}/auth/refresh?refresh_token=${refresh_token}`,
       );
 
-      console.log("ref", response.data);
+      console.log("Refresh response:", response.data);
 
-      // access_token_expires_in
       // Get new token and expiry time
       const { access_token: newToken, access_token_expires_in } = response.data;
-      const newExpireTime = expireDate(access_token_expires_in); // Set new expiry time
+      
+      if (!newToken || !access_token_expires_in) {
+        useAuthStore.getState().SignOut()
+        throw new Error("Invalid refresh response: missing token or expiry time");
+      }
+
+      const newExpireTime = expireDate(access_token_expires_in);
+      console.log("New token expires at:", newExpireTime);
 
       // Update auth store with new token
-      setToken(newToken, String(refresh_token), newExpireTime);
+      setToken(newToken, refresh_token, newExpireTime);
 
       console.log("Token refreshed successfully!");
 
@@ -51,7 +64,7 @@ userDataInstance.interceptors.request.use(async (config) => {
       config.headers.Authorization = `Bearer ${newToken}`;
     } catch (error) {
       console.error("Failed to refresh token:", error);
-
+      
       // If refresh fails, log out the user
       useAuthStore.getState().SignOut();
       return Promise.reject(error);

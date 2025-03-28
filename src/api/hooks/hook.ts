@@ -2,6 +2,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client/client";
 import { useAuthStore } from "@/store/auth";
+import { DateAfter } from "react-day-picker";
 
 
 
@@ -19,6 +20,9 @@ type userData = {
 type goal = {
   name: string,
   description: string
+  status: string
+  due_date: Date
+  cover_image: File | null
 }
 
 const { isAuthenticated } = useAuthStore.getState()
@@ -53,7 +57,7 @@ export const useUserGoals = () => useQuery({
 
 
 export const useCreategoal = (onSuccess: () => void) => useMutation({
-  mutationFn: (goal: goal) => client.createGoal(goal),
+  mutationFn: (formData: FormData) => client.createGoal(formData),
   onSuccess
 })
 

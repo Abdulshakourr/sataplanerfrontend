@@ -32,7 +32,7 @@ function RouteComponent() {
       const { access_token, refresh_token, access_token_expires_in } = detail;
 
       // Calculate expiry times
-      const accessExpireTime = new Date(Date.now() + access_token_expires_in * 1000);
+      const accessExpireTime = new Date(Date.now() + access_token_expires_in);
       if (access_token) {
         client.getUserProfile(access_token).then((data) => console.log("URR", setUser(data)))
       }

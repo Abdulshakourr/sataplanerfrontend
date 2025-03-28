@@ -14,12 +14,14 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as TestIndexImport } from './routes/test/index'
 import { Route as PrivateIndexImport } from './routes/private/index'
 import { Route as isAuthenticatedAuthImport } from './routes/(isAuthenticated)/_auth'
 import { Route as QrcodenewViewPlanIndexImport } from './routes/qrcodenew/view-plan/index'
 import { Route as authSignUpIndexImport } from './routes/(auth)/sign-up/index'
 import { Route as authSignInIndexImport } from './routes/(auth)/sign-in/index'
 import { Route as isAuthenticatedAuthProfileIndexImport } from './routes/(isAuthenticated)/_auth/profile/index'
+import { Route as isAuthenticatedAuthNewGoalIndexImport } from './routes/(isAuthenticated)/_auth/new-goal/index'
 import { Route as isAuthenticatedAuthDashboardIndexImport } from './routes/(isAuthenticated)/_auth/dashboard/index'
 import { Route as isAuthenticatedAuthDashboardGoalGoalIdImport } from './routes/(isAuthenticated)/_auth/dashboard/goal/$goalId'
 
@@ -37,6 +39,12 @@ const isAuthenticatedRoute = isAuthenticatedImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TestIndexRoute = TestIndexImport.update({
+  id: '/test/',
+  path: '/test/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -73,6 +81,13 @@ const isAuthenticatedAuthProfileIndexRoute =
   isAuthenticatedAuthProfileIndexImport.update({
     id: '/profile/',
     path: '/profile/',
+    getParentRoute: () => isAuthenticatedAuthRoute,
+  } as any)
+
+const isAuthenticatedAuthNewGoalIndexRoute =
+  isAuthenticatedAuthNewGoalIndexImport.update({
+    id: '/new-goal/',
+    path: '/new-goal/',
     getParentRoute: () => isAuthenticatedAuthRoute,
   } as any)
 
@@ -122,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateIndexImport
       parentRoute: typeof rootRoute
     }
+    '/test/': {
+      id: '/test/'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof TestIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/(auth)/sign-in/': {
       id: '/(auth)/sign-in/'
       path: '/sign-in'
@@ -150,6 +172,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof isAuthenticatedAuthDashboardIndexImport
       parentRoute: typeof isAuthenticatedAuthImport
     }
+    '/(isAuthenticated)/_auth/new-goal/': {
+      id: '/(isAuthenticated)/_auth/new-goal/'
+      path: '/new-goal'
+      fullPath: '/new-goal'
+      preLoaderRoute: typeof isAuthenticatedAuthNewGoalIndexImport
+      parentRoute: typeof isAuthenticatedAuthImport
+    }
     '/(isAuthenticated)/_auth/profile/': {
       id: '/(isAuthenticated)/_auth/profile/'
       path: '/profile'
@@ -171,6 +200,7 @@ declare module '@tanstack/react-router' {
 
 interface isAuthenticatedAuthRouteChildren {
   isAuthenticatedAuthDashboardIndexRoute: typeof isAuthenticatedAuthDashboardIndexRoute
+  isAuthenticatedAuthNewGoalIndexRoute: typeof isAuthenticatedAuthNewGoalIndexRoute
   isAuthenticatedAuthProfileIndexRoute: typeof isAuthenticatedAuthProfileIndexRoute
   isAuthenticatedAuthDashboardGoalGoalIdRoute: typeof isAuthenticatedAuthDashboardGoalGoalIdRoute
 }
@@ -178,6 +208,7 @@ interface isAuthenticatedAuthRouteChildren {
 const isAuthenticatedAuthRouteChildren: isAuthenticatedAuthRouteChildren = {
   isAuthenticatedAuthDashboardIndexRoute:
     isAuthenticatedAuthDashboardIndexRoute,
+  isAuthenticatedAuthNewGoalIndexRoute: isAuthenticatedAuthNewGoalIndexRoute,
   isAuthenticatedAuthProfileIndexRoute: isAuthenticatedAuthProfileIndexRoute,
   isAuthenticatedAuthDashboardGoalGoalIdRoute:
     isAuthenticatedAuthDashboardGoalGoalIdRoute,
@@ -201,10 +232,12 @@ const isAuthenticatedRouteWithChildren = isAuthenticatedRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof isAuthenticatedAuthRouteWithChildren
   '/private': typeof PrivateIndexRoute
+  '/test': typeof TestIndexRoute
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
   '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
   '/dashboard': typeof isAuthenticatedAuthDashboardIndexRoute
+  '/new-goal': typeof isAuthenticatedAuthNewGoalIndexRoute
   '/profile': typeof isAuthenticatedAuthProfileIndexRoute
   '/dashboard/goal/$goalId': typeof isAuthenticatedAuthDashboardGoalGoalIdRoute
 }
@@ -212,10 +245,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof isAuthenticatedAuthRouteWithChildren
   '/private': typeof PrivateIndexRoute
+  '/test': typeof TestIndexRoute
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
   '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
   '/dashboard': typeof isAuthenticatedAuthDashboardIndexRoute
+  '/new-goal': typeof isAuthenticatedAuthNewGoalIndexRoute
   '/profile': typeof isAuthenticatedAuthProfileIndexRoute
   '/dashboard/goal/$goalId': typeof isAuthenticatedAuthDashboardGoalGoalIdRoute
 }
@@ -226,10 +261,12 @@ export interface FileRoutesById {
   '/(isAuthenticated)': typeof isAuthenticatedRouteWithChildren
   '/(isAuthenticated)/_auth': typeof isAuthenticatedAuthRouteWithChildren
   '/private/': typeof PrivateIndexRoute
+  '/test/': typeof TestIndexRoute
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/(auth)/sign-up/': typeof authSignUpIndexRoute
   '/qrcodenew/view-plan/': typeof QrcodenewViewPlanIndexRoute
   '/(isAuthenticated)/_auth/dashboard/': typeof isAuthenticatedAuthDashboardIndexRoute
+  '/(isAuthenticated)/_auth/new-goal/': typeof isAuthenticatedAuthNewGoalIndexRoute
   '/(isAuthenticated)/_auth/profile/': typeof isAuthenticatedAuthProfileIndexRoute
   '/(isAuthenticated)/_auth/dashboard/goal/$goalId': typeof isAuthenticatedAuthDashboardGoalGoalIdRoute
 }
@@ -239,20 +276,24 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/private'
+    | '/test'
     | '/sign-in'
     | '/sign-up'
     | '/qrcodenew/view-plan'
     | '/dashboard'
+    | '/new-goal'
     | '/profile'
     | '/dashboard/goal/$goalId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/private'
+    | '/test'
     | '/sign-in'
     | '/sign-up'
     | '/qrcodenew/view-plan'
     | '/dashboard'
+    | '/new-goal'
     | '/profile'
     | '/dashboard/goal/$goalId'
   id:
@@ -261,10 +302,12 @@ export interface FileRouteTypes {
     | '/(isAuthenticated)'
     | '/(isAuthenticated)/_auth'
     | '/private/'
+    | '/test/'
     | '/(auth)/sign-in/'
     | '/(auth)/sign-up/'
     | '/qrcodenew/view-plan/'
     | '/(isAuthenticated)/_auth/dashboard/'
+    | '/(isAuthenticated)/_auth/new-goal/'
     | '/(isAuthenticated)/_auth/profile/'
     | '/(isAuthenticated)/_auth/dashboard/goal/$goalId'
   fileRoutesById: FileRoutesById
@@ -274,6 +317,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   isAuthenticatedRoute: typeof isAuthenticatedRouteWithChildren
   PrivateIndexRoute: typeof PrivateIndexRoute
+  TestIndexRoute: typeof TestIndexRoute
   authSignInIndexRoute: typeof authSignInIndexRoute
   authSignUpIndexRoute: typeof authSignUpIndexRoute
   QrcodenewViewPlanIndexRoute: typeof QrcodenewViewPlanIndexRoute
@@ -283,6 +327,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   isAuthenticatedRoute: isAuthenticatedRouteWithChildren,
   PrivateIndexRoute: PrivateIndexRoute,
+  TestIndexRoute: TestIndexRoute,
   authSignInIndexRoute: authSignInIndexRoute,
   authSignUpIndexRoute: authSignUpIndexRoute,
   QrcodenewViewPlanIndexRoute: QrcodenewViewPlanIndexRoute,
@@ -301,6 +346,7 @@ export const routeTree = rootRoute
         "/",
         "/(isAuthenticated)",
         "/private/",
+        "/test/",
         "/(auth)/sign-in/",
         "/(auth)/sign-up/",
         "/qrcodenew/view-plan/"
@@ -320,12 +366,16 @@ export const routeTree = rootRoute
       "parent": "/(isAuthenticated)",
       "children": [
         "/(isAuthenticated)/_auth/dashboard/",
+        "/(isAuthenticated)/_auth/new-goal/",
         "/(isAuthenticated)/_auth/profile/",
         "/(isAuthenticated)/_auth/dashboard/goal/$goalId"
       ]
     },
     "/private/": {
       "filePath": "private/index.tsx"
+    },
+    "/test/": {
+      "filePath": "test/index.tsx"
     },
     "/(auth)/sign-in/": {
       "filePath": "(auth)/sign-in/index.tsx"
@@ -338,6 +388,10 @@ export const routeTree = rootRoute
     },
     "/(isAuthenticated)/_auth/dashboard/": {
       "filePath": "(isAuthenticated)/_auth/dashboard/index.tsx",
+      "parent": "/(isAuthenticated)/_auth"
+    },
+    "/(isAuthenticated)/_auth/new-goal/": {
+      "filePath": "(isAuthenticated)/_auth/new-goal/index.tsx",
       "parent": "/(isAuthenticated)/_auth"
     },
     "/(isAuthenticated)/_auth/profile/": {

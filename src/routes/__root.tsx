@@ -6,7 +6,7 @@ export const Route = createRootRoute({
     <>
       {/* <div className="min-h-screen bg-gradient-to-br from-[#fdfcfb] to-[#e2d1c3]"> */}
       <Outlet />
-      <TanStackRouterDevtools />
+      {/* <TanStackRouterDevtools /> */}
       {/* </div> */}
     </>
   ),

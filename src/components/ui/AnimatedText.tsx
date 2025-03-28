@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
+type ValidElement = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span";
+
 interface AnimatedTextProps {
   text: string;
   className?: string;
-  element?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span";
+  element?: ValidElement;
   animation?: "fade-in" | "fade-in-up" | "reveal" | "typewriter" | "none";
   delay?: number;
   duration?: number;
@@ -14,7 +16,7 @@ interface AnimatedTextProps {
 const AnimatedText: React.FC<AnimatedTextProps> = ({
   text,
   className,
-  element = "p",
+  element: Tag = "p",
   animation = "fade-in",
   delay = 0,
   duration = 500,
@@ -40,14 +42,10 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
     );
 
     const element = document.getElementById(`animated-text-${delay}`);
-    if (element) {
-      observer.observe(element);
-    }
+    if (element) observer.observe(element);
 
     return () => {
-      if (element) {
-        observer.unobserve(element);
-      }
+      if (element) observer.unobserve(element);
     };
   }, [delay, once, isDone]);
 
@@ -86,20 +84,18 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
     }
   };
 
-  const Tag = element as keyof JSX.IntrinsicElements;
-
-  return (
-    <Tag
-      id={`animated-text-${delay}`}
-      className={cn(getAnimationClass(), "transition-opacity", className)}
-      style={{
+  return React.createElement(
+    Tag,
+    {
+      id: `animated-text-${delay}`,
+      className: cn(getAnimationClass(), "transition-opacity", className),
+      style: {
         animationDuration: `${duration}ms`,
         animationDelay: `${delay}ms`,
         transitionDelay: `${delay}ms`,
-      }}
-    >
-      {displayText}
-    </Tag>
+      },
+    },
+    displayText,
   );
 };
 
