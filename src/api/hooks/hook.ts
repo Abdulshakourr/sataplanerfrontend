@@ -16,15 +16,15 @@ type userData = {
   email: string,
   password: string
 }
-type goal = {
+/* type goal = {
   name: string,
   description: string
   status: string
   due_date: Date
   cover_image: File | null
 }
-
-const { isAuthenticated } = useAuthStore.getState()
+ */
+/* const { isAuthenticated } = useAuthStore.getState() */
 
 
 // user hooks
@@ -36,11 +36,11 @@ export const useLogin = () => useMutation({
   mutationFn: (userInfo: userData) => client.userLogin(userInfo)
 })
 
-export const useGetuser = () => useQuery({
+/* export const useGetuser = () => useQuery({
   queryKey: ["user"],
   queryFn: () => client.getUserProfile(),
   enabled: isAuthenticated
-})
+} )*/
 
 
 //end

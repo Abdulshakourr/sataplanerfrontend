@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { Card, CardContent } from '@/components/ui/card'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Quote, ArrowLeft, Calendar, Check, Clock, Edit, Share2, Target } from 'lucide-react'
+import { Quote, ArrowLeft, Check, Clock, Edit, Share2, Target } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { userDataInstance } from '@/api/client/axiosInstance'
 import { useState } from 'react'
@@ -43,6 +43,7 @@ function RouteComponent() {
   ])
 
   if (isError) {
+    console.log("Is", error)
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center space-y-4">
@@ -190,11 +191,11 @@ function RouteComponent() {
             </Button>
 
             <div className="flex gap-2">
-              <Button variant="ghost" size="sm" asChild>
-                <Link to={`/dashboard/goal/${goalId}/edit`}>
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit
-                </Link>
+              <Button variant="ghost" size="sm" >
+                {/*  <Link to="/dashboard/goal/$goalId/edit" params={{ goalId }}> */}
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+                {/*  </Link> */}
               </Button>
               <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
                 <DialogTrigger asChild>
@@ -214,7 +215,7 @@ function RouteComponent() {
                     <Target className="h-12 w-12 text-primary" />
                   </div>
                   <DialogFooter>
-                    <Button onClick={generateQr} isLoading={loading}>
+                    <Button onClick={generateQr} disabled={loading}>
                       Generate QR Code
                     </Button>
                   </DialogFooter>

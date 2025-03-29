@@ -8,14 +8,14 @@ type usercreate = {
   email: string;
   password: string;
 };
-type goal = {
+/* type goal = {
   name: string,
   description: string
   status: string
   due_date: Date
   cover_image: File | null
 }
-
+ */
 export const client = {
   async getExample() {
     const name = "abdulshakour";

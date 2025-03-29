@@ -44,7 +44,7 @@ function RouteComponent() {
           <div className="flex flex-col md:flex-row items-start gap-8">
             <div className="relative group">
               <Avatar className="h-28 w-28 md:h-36 md:w-36 border-4 border-background shadow-lg">
-                <AvatarImage src={null} />
+                {/*  <AvatarImage src={null} /> */}
                 <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white text-4xl font-medium">
                   {getInitials(user?.username)}
                 </AvatarFallback>
