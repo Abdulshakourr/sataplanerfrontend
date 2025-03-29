@@ -1,4 +1,3 @@
-
 import { create } from "zustand"
 import { persist, PersistStorage, StorageValue } from "zustand/middleware"
 import Cookies from "js-cookie"
@@ -56,7 +55,8 @@ export const useAuthStore = create<authState>()(
         set({ user: userData })
       },
       SignOut: () => {
-        set({ access_token: null, refresh_token: null, isAuthenticated: false, expireTime: null, user: null, })
+        Cookies.remove("auth");
+        set({ access_token: null, refresh_token: null, isAuthenticated: false, expireTime: null, user: null })
       },
       updateToken: (token) => {
         set({ access_token: token })

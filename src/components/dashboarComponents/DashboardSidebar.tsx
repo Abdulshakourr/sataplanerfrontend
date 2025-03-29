@@ -112,8 +112,9 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 }) => {
   const { SignOut } = useAuthStore();
   const onLogout = () => {
-    if (label === "logout") {
+    if (label.toLowerCase() === "logout") {
       SignOut();
+      console.log("Hi")
     }
   };
   return (

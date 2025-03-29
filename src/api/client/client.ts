@@ -70,7 +70,7 @@ export const client = {
       const response = await axios.get(`${BaseUrl}/user/me`, {
         headers: {
           Accept: "application/json",
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`
         },
       });
       console.log("US", response);
@@ -84,6 +84,40 @@ export const client = {
       }
     }
   },
+
+  async updateUserProfile(data: { firstname: string, lastname: string, bio: string | undefined }) {
+    console.log("uuuu", data)
+    try {
+      const response = await userDataInstance.put(`/user/update-profile`, data,);
+      console.log("US", response);
+      return response.data;
+    } catch (error: unknown) {
+      console.log("sothis is", error);
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          throw new Error(error.response.data.detail);
+        }
+      }
+    }
+  },
+
+
+  async addUserProfile(data: { firstname: string, lastname: string, bio: string | undefined }) {
+    console.log("uuuu", data)
+    try {
+      const response = await userDataInstance.post(`/user/create-profile`, data,);
+      console.log("US", response);
+      return response.data;
+    } catch (error: unknown) {
+      console.log("sothis is", error);
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          throw new Error(error.response.data.detail);
+        }
+      }
+    }
+  },
+
 
   //end of user
 

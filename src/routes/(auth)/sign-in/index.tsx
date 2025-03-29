@@ -1,30 +1,42 @@
-import { useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useLogin } from '@/api/hooks/hook'
-import { useAuthStore } from '@/store/auth'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import toast from 'react-hot-toast'
-import FormLogin from '@/components/signInForm'
-import { client } from '@/api/client/client'
+import { useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useLogin } from "@/api/hooks/hook";
+import { useAuthStore } from "@/store/auth";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import toast from "react-hot-toast";
+import FormLogin from "@/components/signInForm";
+import { client } from "@/api/client/client";
 
-export const Route = createFileRoute('/(auth)/sign-in/')({
+export const Route = createFileRoute("/(auth)/sign-in/")({
   component: RouteComponent,
-})
+});
 
 type userLogin = {
-  email: string,
-  password: string
-}
+  email: string;
+  password: string;
+};
 
 function RouteComponent() {
-  const { mutate, data: detail, isPending, isError, error, isSuccess } = useLogin()
+  const {
+    mutate,
+    data: detail,
+    isPending,
+    isError,
+    error,
+    isSuccess,
+  } = useLogin();
   const onSignin = (data: userLogin) => {
-    console.log("log", data)
-    mutate(data)
-  }
-  const router = useRouter()
-  const { setToken, setUser } = useAuthStore()
-
+    console.log("log", data);
+    mutate(data);
+  };
+  const router = useRouter();
+  const { setToken, setUser } = useAuthStore();
 
   useEffect(() => {
     if (isSuccess) {
@@ -33,19 +45,21 @@ function RouteComponent() {
 
       // Calculate expiry times
       const accessExpireTime = new Date(Date.now() + access_token_expires_in);
+      //user profile
       if (access_token) {
+
         client.getUserProfile(access_token).then((data) => console.log("URR", setUser(data)))
       }
       // Update auth store
       setToken(access_token, refresh_token, accessExpireTime);
-
-
-      router.navigate({ to: "/dashboard" });
+      setTimeout(() => {
+        router.navigate({ to: "/dashboard" });
+      }, 2000)
     }
   }, [isSuccess]);
 
   if (isError) {
-    toast.error(error?.message)
+    toast.error(error?.message);
   }
 
   return (
@@ -64,5 +78,5 @@ function RouteComponent() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

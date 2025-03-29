@@ -1,8 +1,7 @@
-
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "../client/client";
 import { useAuthStore } from "@/store/auth";
-import { DateAfter } from "react-day-picker";
+;
 
 
 
@@ -37,9 +36,9 @@ export const useLogin = () => useMutation({
   mutationFn: (userInfo: userData) => client.userLogin(userInfo)
 })
 
-export const useGetuser = (token: string) => useQuery({
+export const useGetuser = () => useQuery({
   queryKey: ["user"],
-  queryFn: () => client.getUserProfile(token),
+  queryFn: () => client.getUserProfile(),
   enabled: isAuthenticated
 })
 

@@ -11,8 +11,8 @@ import { useEffect } from "react";
 
 export const Route = createFileRoute("/(isAuthenticated)/_auth")({
   beforeLoad: () => {
-    const { isAuthenticated } = useAuthStore.getState();
-    if (!isAuthenticated) {
+    const { isAuthenticated, access_token } = useAuthStore.getState();
+    if (!isAuthenticated || !access_token) {
       throw redirect({
         to: "/sign-in",
       });
@@ -22,13 +22,14 @@ export const Route = createFileRoute("/(isAuthenticated)/_auth")({
 });
 
 function Auth() {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, access_token } = useAuthStore();
   const router = useRouter();
+
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !access_token) {
       router.navigate({ to: "/sign-in" });
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, access_token, router]);
 
   return (
     <>

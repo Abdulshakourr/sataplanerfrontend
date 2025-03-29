@@ -13,27 +13,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { toast } from "@/hooks/use-toast";
+import UserProfile from "@/components/Userprofile";
 
 export const Route = createFileRoute("/(isAuthenticated)/_auth/profile/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { user, setUser } = useAuthStore();
+  const { user, } = useAuthStore();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    firstname: user?.first_name || "",
-    lastname: user?.last_name || "",
-    bio: user?.bio || "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
 
-  const getInitials = (username: string | null) => {
+  const getInitials = (username: string | null | undefined) => {
     if (!username) return "US";
     const parts = username.split(/[ -]/);
     return parts
@@ -43,56 +34,7 @@ function RouteComponent() {
       .toUpperCase();
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(
-        "https://visionary-v67i.onrender.com/api/v1/user/update-profile",
-        {
-          method: "PUT",
-          headers: {
-            accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({
-            firstname: formData.firstname,
-            lastname: formData.lastname,
-            bio: formData.bio,
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
-
-      const data = await response.json();
-      setUser(data.user);
-      toast({
-        title: "Profile Updated",
-        description: "Your profile has been successfully updated.",
-      });
-      setIsDialogOpen(false);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update profile. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
@@ -107,6 +49,7 @@ function RouteComponent() {
                   {getInitials(user?.username)}
                 </AvatarFallback>
               </Avatar>
+
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
                   <Button
@@ -123,56 +66,7 @@ function RouteComponent() {
                       Edit Profile
                     </DialogTitle>
                   </DialogHeader>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstname">First Name</Label>
-                      <Input
-                        id="firstname"
-                        name="firstname"
-                        value={formData.firstname}
-                        onChange={handleInputChange}
-                        className="rounded-lg"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastname">Last Name</Label>
-                      <Input
-                        id="lastname"
-                        name="lastname"
-                        value={formData.lastname}
-                        onChange={handleInputChange}
-                        className="rounded-lg"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="bio">Bio</Label>
-                      <Textarea
-                        id="bio"
-                        name="bio"
-                        value={formData.bio}
-                        onChange={handleInputChange}
-                        rows={3}
-                        className="rounded-lg"
-                      />
-                    </div>
-                    <div className="flex justify-end gap-2 pt-4">
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsDialogOpen(false)}
-                        type="button"
-                        className="rounded-lg"
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        disabled={isLoading}
-                        className="rounded-lg"
-                      >
-                        {isLoading ? "Saving..." : "Save Changes"}
-                      </Button>
-                    </div>
-                  </form>
+                  <UserProfile />
                 </DialogContent>
               </Dialog>
             </div>
