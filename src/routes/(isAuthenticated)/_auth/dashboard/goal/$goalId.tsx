@@ -1,5 +1,7 @@
-import { usegetGoal } from '@/api/hooks/hook'
-import { Button } from '@/components/ui/button'
+import { createFileRoute, Link } from "@tanstack/react-router";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,169 +9,92 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogTrigger
-} from '@/components/ui/dialog'
-import { Card, CardContent } from '@/components/ui/card'
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { Quote, ArrowLeft, Check, Clock, Edit, Share2, Target } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
-import { userDataInstance } from '@/api/client/axiosInstance'
-import { useState } from 'react'
-import { toast } from '@/hooks/use-toast'
-import { cn } from '@/lib/utils'
-import { motion } from 'framer-motion'
-import { Input } from '@/components/ui/input'
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  ArrowLeft,
+  Edit,
+  Share2,
+  Target,
+  QrCode,
+  Calendar,
+} from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import MotivationView from "@/components/MotivationView";
+import { useGetGoal, useGetMotivation } from "@/api/hooks/hook";
 
-export const Route = createFileRoute('/(isAuthenticated)/_auth/dashboard/goal/$goalId')({
-  component: RouteComponent,
-})
+export const Route = createFileRoute(
+  "/(isAuthenticated)/_auth/dashboard/goal/$goalId",
+)({
+  component: Index,
+});
 
-interface Motivation {
-  id: number
-  type: 'quote' | 'link'
-  content: string
-}
+function Index() {
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { goalId } = Route.useParams();
+  console.log("iddddd", goalId);
+  const { data, isPending, isError, error } = useGetGoal(goalId);
 
-function RouteComponent() {
-  const { goalId } = Route.useParams()
-  const { data, isError, error, isLoading } = usegetGoal(goalId)
-  const [loading, setLoading] = useState(false)
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false)
-  const [newMotivation, setNewMotivation] = useState('')
-  const [motivationType, setMotivationType] = useState<'quote' | 'link'>('quote')
-  const [motivations, setMotivations] = useState<Motivation[]>([
-    { id: 1, type: 'quote', content: '"The only limit is the one you set yourself"' },
-    { id: 2, type: 'link', content: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }
-  ])
+  const { data: motivation, isLoading: loads } = useGetMotivation(goalId);
+
+  // Clear previous data while loading new data
+  const displayMotivation = loads ? undefined : motivation;
 
   if (isError) {
-    console.log("Is", error)
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-medium">Goal Not Found</h1>
-          <p className="text-muted-foreground">The goal you're looking for doesn't exist</p>
+          <p>{error?.message}</p>
+          <p className="text-muted-foreground">
+            The goal you're looking for doesn't exist
+          </p>
+          <p className="text-red-600">{error.message}</p>
           <Button asChild>
             <Link to="/dashboard">Back to Dashboard</Link>
           </Button>
         </div>
-
       </div>
-    )
+    );
   }
 
   const generateQr = () => {
-    setLoading(true)
-    userDataInstance.get(`/qrcode/generate-permanent-qr/${goalId}`, {
-      responseType: "blob",
-    })
-      .then(() => {
-        setLoading(false)
-        toast({
-          title: "QR Code Generated",
-          description: "Share this goal with others using the QR code",
-        })
-        setIsShareDialogOpen(false)
-      })
-      .catch((err) => {
-        console.error("QR generation failed:", err)
-        setLoading(false)
-      })
-  }
+    setLoading(true);
+    // Mock API call for demo - replace with actual API call
+    setTimeout(() => {
+      setLoading(false);
+      toast({
+        title: "QR Code Generated",
+        description: "Share this goal with others using the QR code",
+      });
+      setIsShareDialogOpen(false);
+    }, 1000);
+  };
 
   const handleCompleteGoal = () => {
     toast({
       title: "Goal Completed",
       description: "Congratulations on achieving your goal!",
-    })
-  }
+    });
+  };
 
-  const handleAddMotivation = () => {
-    if (!newMotivation.trim()) {
-      toast({
-        title: "Empty Motivation",
-        description: "Please add some content",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setMotivations([
-      ...motivations,
-      {
-        id: motivations.length + 1,
-        type: motivationType,
-        content: newMotivation
-      }
-    ])
-
-    toast({
-      title: "Motivation Added",
-      description: "Your motivation has been saved",
-    })
-    setNewMotivation('')
-  }
-
-  const renderMotivationItem = (motivation: Motivation) => {
-    if (motivation.type === 'quote') {
-      return (
-        <Card key={motivation.id} className="border-0 shadow-none bg-muted/10 hover:bg-muted/20 transition-colors">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <Quote className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
-              <p className="text-sm">"{motivation.content}"</p>
-            </div>
-          </CardContent>
-        </Card>
-      )
-    } else {
-      // Extract YouTube video ID
-      const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|youtu\.be\/)([^"&?\/\s]{11}))/
-      const match = motivation.content.match(youtubeRegex)
-      const videoId = match ? match[1] : null
-
-      return (
-        <Card key={motivation.id} className="border-0 shadow-none bg-muted/10 hover:bg-muted/20 transition-colors">
-          <CardContent className="p-0 overflow-hidden rounded-lg">
-            {videoId ? (
-              <div className="aspect-video">
-                <iframe
-                  src={`https://www.youtube.com/embed/${videoId}`}
-                  className="w-full h-full"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            ) : (
-              <div className="p-4">
-                <div className="flex items-center gap-3">
-                  <Share2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                  <a
-                    href={motivation.content}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-primary hover:underline break-all"
-                  >
-                    {motivation.content}
-                  </a>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )
-    }
-  }
-
-  const isOverdue = data?.status === 'ACTIVE' && new Date(data?.due_date) < new Date()
+  const isOverdue =
+    data?.status === "ACTIVE" && new Date(data?.due_date) < new Date();
   const daysRemaining = data?.due_date
-    ? Math.ceil((new Date(data.due_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-    : 0
+    ? Math.ceil(
+        (new Date(data.due_date).getTime() - Date.now()) /
+          (1000 * 60 * 60 * 24),
+      )
+    : 0;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-5xl mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -177,46 +102,68 @@ function RouteComponent() {
           className="space-y-8"
         >
           {/* Header */}
-          <div className="flex items-start justify-between">
+          <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
-              className="text-muted-foreground"
+              className="text-slate-600 hover:text-slate-900 hover:bg-slate-100"
               asChild
             >
               <Link to="/dashboard">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
+                Back to Dashboard
               </Link>
             </Button>
 
             <div className="flex gap-2">
-              <Button variant="ghost" size="sm" >
-                {/*  <Link to="/dashboard/goal/$goalId/edit" params={{ goalId }}> */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-slate-200 text-slate-700 hover:bg-slate-100"
+              >
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
-                {/*  </Link> */}
               </Button>
-              <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+
+              {/* Qr-code Dialog */}
+              <Dialog
+                open={isShareDialogOpen}
+                onOpenChange={setIsShareDialogOpen}
+              >
                 <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Share
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-slate-200 text-slate-700 hover:bg-slate-100"
+                  >
+                    <QrCode className="h-4 w-4 mr-2" />
+                    QR Code
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md rounded-lg">
                   <DialogHeader>
-                    <DialogTitle>Share Goal</DialogTitle>
+                    <DialogTitle className="text-xl">
+                      QR Code for This Goal
+                    </DialogTitle>
                     <DialogDescription>
-                      Generate a QR code to share this goal with others
+                      Generate a QR code to easily share this goal with others
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="flex justify-center py-4">
-                    <Target className="h-12 w-12 text-primary" />
+                  <div className="flex flex-col items-center py-6 gap-4">
+                    <div className="p-4 bg-primary/10 rounded-full">
+                      <Share2 className="h-8 w-8 text-primary" />
+                    </div>
+                    <p className="text-sm text-center text-muted-foreground">
+                      Anyone with the QR code can view this goal
+                    </p>
                   </div>
                   <DialogFooter>
-                    <Button onClick={generateQr} disabled={loading}>
-                      Generate QR Code
+                    <Button
+                      onClick={generateQr}
+                      disabled={loading}
+                      className="w-full"
+                    >
+                      {loading ? "Generating..." : "Generate QR Code"}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -224,210 +171,212 @@ function RouteComponent() {
             </div>
           </div>
 
-          {/* Goal Title */}
-          <div className="space-y-2">
-            <h1 className="text-3xl font-medium tracking-tight">
-              {isLoading ? <Skeleton className="h-9 w-64" /> : data?.name}
-            </h1>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {data?.status === 'ACTIVE' && data?.due_date && (
-                <>
-                  <Clock className="h-4 w-4" />
-                  <span className={isOverdue ? "text-destructive" : ""}>
-                    {isOverdue
-                      ? 'Overdue'
-                      : `${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'} remaining`
-                    }
-                  </span>
-                </>
-              )}
-            </div>
-          </div>
+          {/* Content Container */}
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-slate-200">
+            {/* Goal Header */}
+            <div className="p-6 border-b border-slate-100">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
+                    {isPending ? <Skeleton className="h-9 w-64" /> : data?.name}
+                  </h1>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Cover Image */}
-              <div className="aspect-video bg-muted rounded-lg overflow-hidden">
-                {data?.cover_image ? (
-                  <img
-                    src={data.cover_image}
-                    alt={data.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Target className="h-12 w-12 text-muted-foreground" />
-                  </div>
-                )}
-              </div>
-
-              {/* Description */}
-              <Card className="border-0 shadow-none">
-                <CardContent className="p-0">
-                  <h2 className="text-lg font-medium mb-4">Description</h2>
-                  {isLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-4/6" />
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground">
-                      {data?.description || "No description available"}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Enhanced Motivation Section */}
-              <div className="space-y-4">
-                <h2 className="text-lg font-medium">Motivation</h2>
-
-                {/* Motivations List */}
-                <div className="space-y-3">
-                  {motivations.length > 0 ? (
-                    motivations.map(renderMotivationItem)
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <Quote className="mx-auto h-8 w-8 mb-2" />
-                      <p>No motivations added yet</p>
+                  {data?.status === "ACTIVE" && data?.due_date && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Calendar className="h-4 w-4 text-slate-500" />
+                      <span
+                        className={cn(
+                          "font-medium",
+                          isOverdue ? "text-red-500" : "text-slate-500",
+                        )}
+                      >
+                        {isOverdue
+                          ? `Overdue by ${Math.abs(daysRemaining)} days`
+                          : `${daysRemaining} ${daysRemaining === 1 ? "day" : "days"} remaining`}
+                      </span>
+                      <span className="text-slate-400">•</span>
+                      <span className="text-slate-500">
+                        Due{" "}
+                        {new Date(data.due_date).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </span>
                     </div>
                   )}
                 </div>
 
-                {/* Add New Motivation */}
-                <Card className="border-0 shadow-none">
-                  <CardContent className="p-4">
-                    <div className="space-y-4">
-                      <div className="flex gap-2">
-                        <Button
-                          variant={motivationType === 'quote' ? 'default' : 'ghost'}
-                          size="sm"
-                          onClick={() => setMotivationType('quote')}
-                        >
-                          <Quote className="h-4 w-4 mr-2" />
-                          Quote
-                        </Button>
-                        <Button
-                          variant={motivationType === 'link' ? 'default' : 'ghost'}
-                          size="sm"
-                          onClick={() => setMotivationType('link')}
-                        >
-                          <Share2 className="h-4 w-4 mr-2" />
-                          Video/Link
-                        </Button>
-                      </div>
-
-                      {motivationType === 'quote' ? (
-                        <div className="flex gap-2">
-                          <Input
-                            placeholder="Add an inspiring quote..."
-                            value={newMotivation}
-                            onChange={(e) => setNewMotivation(e.target.value)}
-                          />
-                          <Button
-                            variant="outline"
-                            onClick={handleAddMotivation}
-                            disabled={!newMotivation.trim()}
-                          >
-                            Add Quote
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          <Input
-                            placeholder="Paste a YouTube or video link..."
-                            value={newMotivation}
-                            onChange={(e) => setNewMotivation(e.target.value)}
-                          />
-                          <div className="flex justify-between items-center">
-                            <p className="text-xs text-muted-foreground">
-                              Supports YouTube, Vimeo, and other embeddable links
-                            </p>
-                            <Button
-                              variant="outline"
-                              onClick={handleAddMotivation}
-                              disabled={!newMotivation.trim()}
-                            >
-                              Add Video
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                <Badge
+                  variant={
+                    data?.status === "COMPLETED" ? "secondary" : "default"
+                  }
+                  className={cn(
+                    "text-sm px-3 py-1 font-medium",
+                    isOverdue && "bg-red-100 text-red-600 hover:bg-red-200",
+                    data?.status === "ACTIVE" &&
+                      !isOverdue &&
+                      "bg-green-100 text-green-700 hover:bg-green-200",
+                    data?.status === "COMPLETED" &&
+                      "bg-slate-100 text-slate-700 hover:bg-slate-200",
+                  )}
+                >
+                  {data?.status}
+                </Badge>
               </div>
             </div>
 
-            {/* Sidebar */}
-            <div className="space-y-4">
-              {/* Status */}
-              <Card className="border-0 shadow-none">
-                <CardContent className="p-0">
-                  <h3 className="text-lg font-medium mb-4">Status</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Status</span>
-                      <span className={cn(
-                        "text-xs px-2 py-1 rounded-full",
-                        data?.status === 'COMPLETED'
-                          ? "bg-green-500/10 text-green-600"
-                          : "bg-primary/10 text-primary"
-                      )}>
-                        {data?.status}
-                      </span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+              {/* Main Content */}
+              <div className="md:col-span-2 border-r border-slate-100">
+                {/* Cover Image */}
+                <div className="aspect-video bg-slate-100 overflow-hidden relative">
+                  {data?.cover_image ? (
+                    <img
+                      src={data.cover_image}
+                      alt={data.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+                      <Target className="h-12 w-12 text-slate-300" />
                     </div>
+                  )}
+                </div>
 
-                    {data?.due_date && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Due Date</span>
-                        <span className="text-sm">
-                          {new Date(data.due_date).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
-                        </span>
+                <div className="p-6">
+                  {/* Description */}
+                  <div className="mb-8">
+                    <h2 className="text-xl font-semibold mb-4 text-slate-800">
+                      Description
+                    </h2>
+                    {isPending ? (
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-5/6" />
+                        <Skeleton className="h-4 w-4/6" />
                       </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Actions */}
-              <Card className="border-0 shadow-none">
-                <CardContent className="p-0">
-                  <h3 className="text-lg font-medium mb-4">Actions</h3>
-                  <div className="space-y-2">
-                    {data?.status === 'ACTIVE' ? (
-                      <>
-                        <Button
-                          variant="default"
-                          className="w-full"
-                          onClick={handleCompleteGoal}
-                        >
-                          <Check className="h-4 w-4 mr-2" />
-                          Complete Goal
-                        </Button>
-                        <Button variant="outline" className="w-full">
-                          Update Progress
-                        </Button>
-                      </>
                     ) : (
-                      <Button variant="default" className="w-full" disabled>
-                        <Check className="h-4 w-4 mr-2" />
-                        Completed
-                      </Button>
+                      <p className="text-slate-600 leading-relaxed">
+                        {data?.description || "No description available"}
+                      </p>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+
+                  {/* Motivation Section */}
+                  <div className="mb-6">
+                    <MotivationView
+                      data={displayMotivation}
+                      id={goalId}
+                      loads={loads}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Sidebar */}
+              <div className="bg-slate-50/50 p-6">
+                <div className="sticky top-6 space-y-6">
+                  {/* Status Card */}
+                  <div className="space-y-5">
+                    <h3 className="text-lg font-semibold text-slate-800">
+                      Goal Details
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                        <div className="p-4 border-b border-slate-100">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-slate-500 font-medium">
+                              Status
+                            </span>
+                            <Badge
+                              variant={
+                                data?.status === "COMPLETED"
+                                  ? "secondary"
+                                  : "default"
+                              }
+                              className={cn(
+                                "text-xs px-2 py-0",
+                                isOverdue &&
+                                  "bg-red-100 text-red-600 hover:bg-red-200",
+                                data?.status === "ACTIVE" &&
+                                  !isOverdue &&
+                                  "bg-green-100 text-green-700 hover:bg-green-200",
+                                data?.status === "COMPLETED" &&
+                                  "bg-slate-100 text-slate-700 hover:bg-slate-200",
+                              )}
+                            >
+                              {data?.status}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <div className="p-4 border-b border-slate-100">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-slate-500 font-medium">
+                              Created
+                            </span>
+                            <span className="text-sm font-medium text-slate-700">
+                              {data?.created_at
+                                ? new Date(data.created_at).toLocaleDateString(
+                                    "en-US",
+                                    {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                    },
+                                  )
+                                : "N/A"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {data?.due_date && (
+                          <div className="p-4">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-slate-500 font-medium">
+                                Due Date
+                              </span>
+                              <span
+                                className={cn(
+                                  "text-sm font-medium",
+                                  isOverdue ? "text-red-500" : "text-slate-700",
+                                )}
+                              >
+                                {new Date(data.due_date).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  },
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  {data?.status === "ACTIVE" && (
+                    <Button
+                      onClick={handleCompleteGoal}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      Mark as Completed
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </motion.div>
       </div>
     </div>
-  )
+  );
 }
+
+export default Index;

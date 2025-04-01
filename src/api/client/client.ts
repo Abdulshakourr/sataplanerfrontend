@@ -70,7 +70,7 @@ export const client = {
       const response = await axios.get(`${BaseUrl}/user/me`, {
         headers: {
           Accept: "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log("US", response);
@@ -85,10 +85,14 @@ export const client = {
     }
   },
 
-  async updateUserProfile(data: { firstname: string, lastname: string, bio: string | undefined }) {
-    console.log("uuuu", data)
+  async updateUserProfile(data: {
+    firstname: string;
+    lastname: string;
+    bio: string | undefined;
+  }) {
+    console.log("uuuu", data);
     try {
-      const response = await userDataInstance.put(`/user/update-profile`, data,);
+      const response = await userDataInstance.put(`/user/update-profile`, data);
       console.log("US", response);
       return response.data;
     } catch (error: unknown) {
@@ -101,11 +105,17 @@ export const client = {
     }
   },
 
-
-  async addUserProfile(data: { firstname: string, lastname: string, bio: string | undefined }) {
-    console.log("uuuu", data)
+  async addUserProfile(data: {
+    firstname: string;
+    lastname: string;
+    bio: string | undefined;
+  }) {
+    console.log("uuuu", data);
     try {
-      const response = await userDataInstance.post(`/user/create-profile`, data,);
+      const response = await userDataInstance.post(
+        `/user/create-profile`,
+        data,
+      );
       console.log("US", response);
       return response.data;
     } catch (error: unknown) {
@@ -117,18 +127,16 @@ export const client = {
       }
     }
   },
-
 
   //end of user
 
   // CreateGoal
   async createGoal(formData: FormData) {
     try {
-      const response = await userDataInstance.post(`/goals/add`, formData, {
-      });
+      const response = await userDataInstance.post(`/goals/add`, formData, {});
       return response.data;
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       throw error;
     }
   },
@@ -194,9 +202,9 @@ export const client = {
     }
   },
 
-  async getMotivations(planId: string) {
+  async getMotivations(goalId: string) {
     try {
-      const response = userDataInstance.get(`/motivations/${planId}`);
+      const response = userDataInstance.get(`/motivations/${goalId}`);
       console.log("cli", await response);
       return (await response).data.data;
     } catch (error: unknown) {

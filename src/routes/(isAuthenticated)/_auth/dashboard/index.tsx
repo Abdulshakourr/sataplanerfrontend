@@ -3,14 +3,19 @@ import { CheckCircle, Clock, Plus, Search, Target } from "lucide-react";
 import { useUserGoals } from "@/api/hooks/hook";
 import { motion } from "framer-motion";
 import { useAuthStore } from "@/store/auth";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import AddProfileForm from "@/components/addUserProfile";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import GoalCard from "@/components/GoalCard";
 
 export const Route = createFileRoute("/(isAuthenticated)/_auth/dashboard/")({
   component: DashboardPage,
@@ -20,7 +25,7 @@ function DashboardPage() {
   const { user } = useAuthStore();
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const { data: goals, isError, error, isPending } = useUserGoals();
-  console.log("d", goals)
+
   useEffect(() => {
     if (user && !user?.first_name) {
       setProfileDialogOpen(true);
@@ -29,7 +34,7 @@ function DashboardPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-muted animate-pulse" />
           <div className="h-4 w-48 bg-muted rounded animate-pulse" />
@@ -46,8 +51,14 @@ function DashboardPage() {
     });
   }
 
+  // Sort goals by created_at date (newest first)
+  const sortedGoals = goals?.sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  );
+
   return (
-    <div className="px-4 sm:px-6 py-6">
+    <div className="px-4 sm:px-6 py-6 bg-background">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -56,12 +67,12 @@ function DashboardPage() {
       >
         <DashboardHeader user={user} />
         <SearchBar />
-        <StatsSection goals={goals} loading={isPending} />
+        <StatsSection goals={sortedGoals} loading={isPending} />
         <ProfileSetupDialog
           open={profileDialogOpen}
           onOpenChange={setProfileDialogOpen}
         />
-        <RecentGoalsSection goals={goals} loading={isPending} />
+        <RecentGoalsSection goals={sortedGoals} loading={isPending} />
       </motion.div>
     </div>
   );
@@ -69,17 +80,20 @@ function DashboardPage() {
 
 function DashboardHeader({ user }: { user: any }) {
   const currentHour = new Date().getHours();
-  const greeting = currentHour < 12 ? "Good morning" :
-    currentHour < 18 ? "Good afternoon" : "Good evening";
+  const greeting =
+    currentHour < 12
+      ? "Good morning"
+      : currentHour < 18
+        ? "Good afternoon"
+        : "Good evening";
 
   return (
     <header className="mb-8 space-y-2">
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-        {greeting}, <span className="text-primary">{user?.first_name || 'User'}</span>
+        {greeting},{" "}
+        <span className="text-primary">{user?.first_name || "User"}</span>
       </h1>
-      <p className="text-muted-foreground">
-        Let's make progress on your goals today
-      </p>
+      <p className="text-muted-foreground">Here's your progress overview</p>
     </header>
   );
 }
@@ -87,49 +101,54 @@ function DashboardHeader({ user }: { user: any }) {
 function SearchBar() {
   return (
     <div className="mb-8">
-      <div className="relative">
+      <div className="relative max-w-2xl">
         <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
         <Input
           placeholder="Search goals..."
-          className="w-full pl-10 pr-4 h-12 rounded-xl"
+          className="w-full pl-10 pr-4 h-12 rounded-xl bg-background"
         />
       </div>
     </div>
   );
 }
 
-function StatsSection({ goals, loading }: { goals?: any[], loading: boolean }) {
+function StatsSection({ goals, loading }: { goals?: any[]; loading: boolean }) {
   const stats = {
     total: goals?.length || 0,
-    active: goals?.filter(g => g.status === 'ACTIVE').length || 0,
-    completed: goals?.filter(g => g.status === 'COMPLETED').length || 0,
+    active: goals?.filter((g) => g.status === "ACTIVE").length || 0,
+    completed: goals?.filter((g) => g.status === "COMPLETED").length || 0,
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       {loading ? (
-        Array(3).fill(0).map((_, i) => (
-          <Card key={i} className="p-6 h-32 animate-pulse">
-            <div className="h-6 w-20 bg-muted rounded mb-4" />
-            <div className="h-8 w-24 bg-muted rounded" />
-          </Card>
-        ))
+        Array(3)
+          .fill(0)
+          .map((_, i) => (
+            <Card key={i} className="p-6 h-32 animate-pulse bg-muted/20">
+              <div className="h-6 w-20 bg-muted/40 rounded mb-4" />
+              <div className="h-8 w-24 bg-muted/40 rounded" />
+            </Card>
+          ))
       ) : (
         <>
           <StatCard
             title="Total Goals"
             value={stats.total}
             icon={<Target className="h-6 w-6 text-primary" />}
+            trend={stats.total > 0 ? "up" : "none"}
           />
           <StatCard
             title="Active Goals"
             value={stats.active}
             icon={<Clock className="h-6 w-6 text-orange-500" />}
+            trend={stats.active > 0 ? "up" : "none"}
           />
           <StatCard
             title="Completed"
             value={stats.completed}
             icon={<CheckCircle className="h-6 w-6 text-green-500" />}
+            trend={stats.completed > 0 ? "up" : "none"}
           />
         </>
       )}
@@ -137,24 +156,49 @@ function StatsSection({ goals, loading }: { goals?: any[], loading: boolean }) {
   );
 }
 
-function StatCard({ title, value, icon }: { title: string; value: number; icon: React.ReactNode }) {
+function StatCard({
+  title,
+  value,
+  icon,
+  trend = "none",
+}: {
+  title: string;
+  value: number;
+  icon: React.ReactNode;
+  trend?: "up" | "down" | "none";
+}) {
   return (
-    <Card className="p-6 transition-all hover:shadow-md">
+    <Card className="p-6 transition-all hover:shadow-md bg-background">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-muted-foreground mb-1">{title}</p>
           <p className="text-3xl font-bold">{value}</p>
         </div>
-        <div className="p-3 rounded-full bg-muted">{icon}</div>
+        <div className="p-3 rounded-full bg-muted/20">{icon}</div>
       </div>
+      {trend !== "none" && (
+        <div
+          className={`mt-2 text-xs font-medium ${
+            trend === "up" ? "text-green-500" : "text-red-500"
+          }`}
+        >
+          {trend === "up" ? "↑ Increased" : "↓ Decreased"}
+        </div>
+      )}
     </Card>
   );
 }
 
-function ProfileSetupDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+function ProfileSetupDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] rounded-2xl">
+      <DialogContent className="sm:max-w-[600px] rounded-2xl bg-background">
         <DialogHeader>
           <DialogTitle className="text-xl">Complete Your Profile</DialogTitle>
         </DialogHeader>
@@ -164,14 +208,25 @@ function ProfileSetupDialog({ open, onOpenChange }: { open: boolean; onOpenChang
   );
 }
 
-function RecentGoalsSection({ goals, loading }: { goals?: any[], loading: boolean }) {
+function RecentGoalsSection({
+  goals,
+  loading,
+}: {
+  goals?: any[];
+  loading: boolean;
+}) {
   return (
     <section className="mb-12">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Recent Goals</h2>
+        <div>
+          <h2 className="text-xl font-semibold">Latest Goals</h2>
+          <p className="text-sm text-muted-foreground">
+            Your most recently created goals
+          </p>
+        </div>
         <Link to="/new-goal">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
+          <Button className="gap-2">
+            <Plus className="h-4 w-4" />
             New Goal
           </Button>
         </Link>
@@ -179,46 +234,43 @@ function RecentGoalsSection({ goals, loading }: { goals?: any[], loading: boolea
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array(3).fill(0).map((_, i) => (
-            <Card key={i} className="p-6 h-48 animate-pulse">
-              <div className="h-6 w-3/4 bg-muted rounded mb-4" />
-              <div className="h-4 w-full bg-muted rounded mb-2" />
-              <div className="h-4 w-2/3 bg-muted rounded" />
-            </Card>
-          ))}
+          {Array(3)
+            .fill(0)
+            .map((_, i) => (
+              <Card key={i} className="p-6 h-48 animate-pulse bg-muted/20">
+                <div className="h-6 w-3/4 bg-muted/40 rounded mb-4" />
+                <div className="h-4 w-full bg-muted/40 rounded mb-2" />
+                <div className="h-4 w-2/3 bg-muted/40 rounded" />
+              </Card>
+            ))}
         </div>
       ) : goals?.length ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {goals.slice(0, 3).map((goal) => (
             <GoalCard key={goal.id} goal={goal} />
           ))}
+          <p className="text-md text-gray-400  text-start underline">
+            <Link>All Goals</Link>
+          </p>
         </div>
       ) : (
-        <Card className="p-8 text-center">
-          <p className="text-muted-foreground mb-4">No goals created yet</p>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Create First Goal
-          </Button>
+        <Card className="p-8 text-center bg-background">
+          <div className="mx-auto max-w-md">
+            <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium mb-2">No goals yet</h3>
+            <p className="text-muted-foreground mb-6">
+              Start by creating your first goal to track your progress
+            </p>
+            <Link to="/new-goal">
+              <Button className="gap-2">
+                <Plus className="h-4 w-4" />
+                Create First Goal
+              </Button>
+            </Link>
+          </div>
         </Card>
       )}
     </section>
   );
 }
 
-function GoalCard({ goal }: { goal: any }) {
-  return (
-    <Card className="p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between mb-4">
-        <Target className="h-6 w-6 text-primary" />
-        <Badge variant={goal.status === 'COMPLETED' ? 'default' : 'secondary'}>
-          {goal.status}
-        </Badge>
-      </div>
-      <h3 className="font-medium mb-2">{goal.name}</h3>
-      <p className="text-sm text-muted-foreground line-clamp-2">
-        {goal.description || 'No description'}
-      </p>
-    </Card>
-  );
-}
