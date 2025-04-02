@@ -33,12 +33,12 @@ type goal = {
   description: string;
   status: string;
   due_date: Date;
-  cover_image: File | null;
+  cover_image: string | null;
 };
 
 function AllGoalsPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
 
   const {

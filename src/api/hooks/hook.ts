@@ -10,7 +10,7 @@ type userData = {
   email: string;
   password: string;
 };
-type goal = {
+export type goal = {
   name: string;
   description: string;
   status: string;

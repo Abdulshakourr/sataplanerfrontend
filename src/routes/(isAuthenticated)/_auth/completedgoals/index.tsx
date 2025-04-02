@@ -31,7 +31,7 @@ export const Route = createFileRoute(
 
 function AllGoalsPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
 
   const {
@@ -47,16 +47,21 @@ function AllGoalsPage() {
 
   // Get filtered active goals
   const activeGoals =
-    goalsData?.goals?.filter((goal) => goal.status === "COMPLETED") || [];
+    goalsData?.goals?.filter((goal: Goal) => goal.status === "COMPLETED") || [];
   const totalGoals = goalsData?.total || 0;
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setCurrentPage(1);
+    const formData = new FormData(e.currentTarget);
+    setSearchTerm(formData.get('search') as string);
+  };
+
+  const handleGoalClick = (goal: Goal) => {
+    // ... existing code ...
   };
 
   if (isError) {

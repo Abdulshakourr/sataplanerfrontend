@@ -23,9 +23,9 @@ const DashboardSidebar = () => {
 
   const stats = {
     total: goalsData?.total || 0,
-    active: goalsData?.goals.filter((g) => g.status === "ACTIVE").length || 0,
+    active: goalsData?.goals.filter((g: { status: string }) => g.status === "ACTIVE").length || 0,
     completed:
-      goalsData?.goals.filter((g) => g.status === "COMPLETED").length || 0,
+      goalsData?.goals.filter((g: { status: string }) => g.status === "COMPLETED").length || 0,
   };
 
   return (

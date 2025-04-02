@@ -38,7 +38,7 @@ interface goal {
 
 function AllGoalsPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
 
   const {
@@ -54,7 +54,7 @@ function AllGoalsPage() {
 
   // Get filtered active goals
   const activeGoals =
-    goalsData?.goals?.filter((goal) => goal.status === "ACTIVE") || [];
+    goalsData?.goals?.filter((goal: goal) => goal.status === "ACTIVE") || [];
   const totalGoals = goalsData?.total || 0;
 
   const handlePageChange = (page: number) => {

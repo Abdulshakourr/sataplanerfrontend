@@ -68,7 +68,7 @@ function DashboardPage() {
 
   // Sort goals by created_at date (newest first)
   const sortedGoals = goals?.sort(
-    (a, b) =>
+    (a: { created_at: string }, b: { created_at: string }) =>
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
 
@@ -193,9 +193,8 @@ function StatCard({
       </div>
       {trend !== "none" && (
         <div
-          className={`mt-2 text-xs font-medium ${
-            trend === "up" ? "text-green-500" : "text-red-500"
-          }`}
+          className={`mt-2 text-xs font-medium ${trend === "up" ? "text-green-500" : "text-red-500"
+            }`}
         >
           {trend === "up" ? "↑ Increased" : "↓ Decreased"}
         </div>
