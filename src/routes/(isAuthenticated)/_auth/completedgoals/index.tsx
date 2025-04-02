@@ -23,6 +23,15 @@ import {
 } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
 
+interface Goal {
+  id: string;
+  name: string;
+  description: string;
+  due_date: string;
+  status: string;
+  cover_image?: string;
+}
+
 export const Route = createFileRoute(
   "/(isAuthenticated)/_auth/completedgoals/",
 )({
@@ -58,10 +67,6 @@ function AllGoalsPage() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     setSearchTerm(formData.get('search') as string);
-  };
-
-  const handleGoalClick = (goal: Goal) => {
-    // ... existing code ...
   };
 
   if (isError) {
@@ -141,7 +146,7 @@ function AllGoalsPage() {
           </Button>
 
           {activeGoals.length ? (
-            activeGoals.map((goal) => <GoalCard key={goal.id} goal={goal} />)
+            activeGoals.map((goal: Goal) => <GoalCard key={goal.id} goal={goal} />)
           ) : (
             <div className="col-span-full text-center p-12 rounded-2xl bg-muted/30">
               <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -323,13 +328,4 @@ function GoalCard({ goal }: { goal: Goal }) {
 
 function cn(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
-}
-
-interface Goal {
-  id: string;
-  name: string;
-  description: string;
-  due_date: string;
-  status: string;
-  cover_image?: string;
 }
