@@ -10,10 +10,22 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth";
+import { useUserGoals } from "@/api/hooks/hook";
 
 const MobileNav = () => {
   const { user } = useAuthStore();
+  const { data: goalsData } = useUserGoals({
+    offset: 0,
+    limit: 10,
+    search: "",
+  });
 
+  const stats = {
+    total: goalsData?.total || 0,
+    active: goalsData?.goals.filter((g: { status: string }) => g.status === "ACTIVE").length || 0,
+    completed:
+      goalsData?.goals.filter((g: { status: string }) => g.status === "COMPLETED").length || 0,
+  };
   return (
     <aside className="fixed  inset-y-0 left-0 w-72   md:flex flex-col -z-10">
       {/* User Profile */}
@@ -54,20 +66,20 @@ const MobileNav = () => {
             <SidebarItem
               icon={<Clock size={20} />}
               label="All Goals"
-              path="/all-goals"
-              badge="4"
+              path="/allgoals"
+              badge={stats.total === "0" ? 0 : stats.total}
             />
             <SidebarItem
               icon={<Clock size={20} />}
               label="Active Goals"
-              path="/active-goals"
-              badge="3"
+              path="/activegoals"
+              badge={stats.active === "0" ? 0 : stats.active}
             />
             <SidebarItem
               icon={<CheckCircle size={20} />}
               label="Completed"
-              path="/completed-goals"
-              badge="1"
+              path="/completedgoals"
+              badge={stats.completed === 0 ? "0" : stats.completed}
             />
           </ul>
         </div>

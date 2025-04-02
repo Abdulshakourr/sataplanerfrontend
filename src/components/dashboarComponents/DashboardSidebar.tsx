@@ -69,13 +69,13 @@ const DashboardSidebar = () => {
               icon={<Clock size={20} />}
               label="All Goals"
               path="/allgoals"
-              badge={stats.total}
+              badge={stats.total === "0" ? 0 : stats.total}
             />
             <SidebarItem
               icon={<Clock size={20} />}
               label="Active Goals"
               path="/activegoals"
-              badge={stats.active}
+              badge={stats.active === "0" ? 0 : stats.active}
             />
             <SidebarItem
               icon={<CheckCircle size={20} />}
