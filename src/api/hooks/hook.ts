@@ -10,14 +10,14 @@ type userData = {
   email: string;
   password: string;
 };
-/* type goal = {
-  name: string,
-  description: string
-  status: string
-  due_date: Date
-  cover_image: File | null
-}
- */
+type goal = {
+  name: string;
+  description: string;
+  status: string;
+  due_date: Date;
+  cover_image: File | null;
+};
+
 /* const { isAuthenticated } = useAuthStore.getState() */
 
 // user hooks
@@ -36,13 +36,33 @@ export const useLogin = () =>
 
 //getting and creating userData hooks
 
-export const useUserGoals = () =>
+// Update your hook definition
+export const useUserGoals = ({
+  offset,
+  limit,
+  search,
+}: {
+  offset: number;
+  limit: number;
+  search?: string;
+}) =>
   useQuery({
-    queryKey: ["goals"],
-    queryFn: client.getGoals,
-    select: (data) => data.reverse(),
+    queryKey: ["goals", { offset, limit, search }],
+    queryFn: () => client.getGoals(offset, limit),
+    select: (data) => ({
+      // Filter active goals from the server response
+      goals: data,
+      // Keep original total count for pagination reference
+      total: data.length,
+    }),
   });
-
+// export const useUserGoals = (offset, limit) =>
+//   useQuery({
+//     queryKey: ["goals"],
+//     queryFn: () => client.getGoals(offset, limit),
+//     // select: (data) => data.reverse(),
+//   });
+//
 export const useCreategoal = (onSuccess: () => void) =>
   useMutation({
     mutationFn: (formData: FormData) => client.createGoal(formData),

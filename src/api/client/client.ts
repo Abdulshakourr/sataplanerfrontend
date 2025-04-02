@@ -141,9 +141,12 @@ export const client = {
     }
   },
 
-  async getGoals() {
+  async getGoals(offset: number, limit: number) {
+    console.log("wharr", offset, "l", limit);
     try {
-      const response = await userDataInstance.get("/goals/allgoals");
+      const response = await userDataInstance.get(
+        `/goals/allgoals?offset=${offset}&limit=${limit}`,
+      );
       return response.data;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {

@@ -24,7 +24,22 @@ export const Route = createFileRoute("/(isAuthenticated)/_auth/dashboard/")({
 function DashboardPage() {
   const { user } = useAuthStore();
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
-  const { data: goals, isError, error, isPending } = useUserGoals();
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [itemsPerPage, setItemsPerPage] = useState(10);
+  // const [searchTerm, setSearchTerm] = useState("");
+
+  const {
+    data: goalData,
+    isError,
+    error,
+    isPending,
+  } = useUserGoals({
+    offset: 0,
+    limit: 10,
+    search: "",
+  });
+
+  const goals = goalData?.goals;
 
   useEffect(() => {
     if (user && !user?.first_name) {
@@ -250,7 +265,7 @@ function RecentGoalsSection({
             <GoalCard key={goal.id} goal={goal} />
           ))}
           <p className="text-md text-gray-400  text-start underline">
-            <Link>All Goals</Link>
+            <Link to="/allgoals"> All Goals</Link>
           </p>
         </div>
       ) : (
@@ -273,4 +288,3 @@ function RecentGoalsSection({
     </section>
   );
 }
-

@@ -1,9 +1,5 @@
-import ReactPlayer from "react-player";
 import { Card, CardContent } from "@/components/ui/card";
-import { Quote } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -13,6 +9,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import MotivationForm from "./motivationForm";
+import MotivationCard from "./MotivationCard";
 interface MotivationItem {
   id: string;
   quote?: string;
@@ -25,9 +22,9 @@ interface MotivationProp {
   id: string;
 }
 
-interface MotivationCardProps {
-  data: MotivationItem;
-}
+// interface MotivationCardProps {
+//   data: MotivationItem;
+// }
 const MotivationView = ({ data, loads, id }: MotivationProp) => {
   return (
     <Card className="border shadow-sm overflow-hidden bg-white">
@@ -65,59 +62,4 @@ const MotivationView = ({ data, loads, id }: MotivationProp) => {
     </Card>
   );
 };
-export function MotivationCard({ data }: MotivationCardProps) {
-  const hasQuote = !!data?.quote;
-  const hasVideo = !!data?.link;
-
-  return (
-    <div className="space-y-6">
-      {hasVideo && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="rounded-lg overflow-hidden bg-black/5"
-        >
-          <div className="aspect-video w-full">
-            <ReactPlayer
-              url={data.link}
-              width="100%"
-              height="100%"
-              controls
-              light={true}
-              playing={false}
-              config={{
-                youtube: {
-                  playerVars: { showinfo: 1 },
-                },
-                facebook: {
-                  appId: "12345",
-                },
-              }}
-            />
-          </div>
-        </motion.div>
-      )}
-
-      {hasQuote && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className={cn(
-            "relative p-6 rounded-lg mt-12",
-            hasVideo
-              ? "bg-slate-50"
-              : "bg-gradient-to-br from-primary/5 to-primary/10",
-          )}
-        >
-          <Quote className="absolute text-primary/10 h-12 w-12 -top-2 -left-2" />
-          <blockquote className="relative z-10 text-lg italic font-medium text-slate-700 pl-4">
-            "{data.quote}"
-          </blockquote>
-        </motion.div>
-      )}
-    </div>
-  );
-}
 export default MotivationView;

@@ -10,16 +10,30 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth";
+import { useUserGoals } from "@/api/hooks/hook";
 
 const DashboardSidebar = () => {
   const { user } = useAuthStore();
+
+  const { data: goalsData } = useUserGoals({
+    offset: 0,
+    limit: 10,
+    search: "",
+  });
+
+  const stats = {
+    total: goalsData?.total || 0,
+    active: goalsData?.goals.filter((g) => g.status === "ACTIVE").length || 0,
+    completed:
+      goalsData?.goals.filter((g) => g.status === "COMPLETED").length || 0,
+  };
 
   return (
     <aside className="fixed  inset-y-0 left-0 w-56 bg-white border-r border-gray-200 hidden md:flex flex-col z-10">
       {/* User Profile */}
       <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center">
-          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-goal-600 font-semibold">
+        <div className="flex items-center flex-col">
+          <div className="h-8 w-8 p-4 rounded-full bg-gray-200 flex items-center justify-center text-goal-600 font-semibold">
             J
           </div>
           <div className="ml-3 text-start">
@@ -54,20 +68,20 @@ const DashboardSidebar = () => {
             <SidebarItem
               icon={<Clock size={20} />}
               label="All Goals"
-              path="/all-goals"
-              badge="4"
+              path="/allgoals"
+              badge={stats.total}
             />
             <SidebarItem
               icon={<Clock size={20} />}
               label="Active Goals"
-              path="/active-goals"
-              badge="3"
+              path="/activegoals"
+              badge={stats.active}
             />
             <SidebarItem
               icon={<CheckCircle size={20} />}
               label="Completed"
-              path="/completed-goals"
-              badge="1"
+              path="/completedgoals"
+              badge={stats.completed === 0 ? "0" : stats.completed}
             />
           </ul>
         </div>
@@ -114,7 +128,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   const onLogout = () => {
     if (label.toLowerCase() === "logout") {
       SignOut();
-      console.log("Hi")
+      console.log("Hi");
     }
   };
   return (
