@@ -18,6 +18,13 @@ export type goal = {
   cover_image: File | null;
 };
 
+export type goals = {
+  name: string;
+  description: string;
+  status: string;
+  due_date: string
+}
+
 /* const { isAuthenticated } = useAuthStore.getState() */
 
 // user hooks
@@ -69,6 +76,15 @@ export const useCreategoal = (onSuccess: () => void) =>
     onSuccess,
   });
 
+export const useUpdategoal = (id: string, onSuccess: () => void) =>
+  useMutation({
+    mutationFn: (data: goals) => client.updateGoal(id, data),
+    onSuccess,
+  });
+
+
+
+
 export const useGoalDelete = () =>
   useMutation({
     mutationFn: (id: string) => client.deleteGoal(id),
@@ -79,6 +95,7 @@ export const useGetGoal = (id: string) =>
     queryKey: ["goals", id],
     queryFn: () => client.getGoal(id),
   });
+
 
 // motivation
 

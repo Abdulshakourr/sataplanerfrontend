@@ -26,6 +26,7 @@ import { Route as isAuthenticatedAuthDashboardIndexImport } from './routes/(isAu
 import { Route as isAuthenticatedAuthCompletedgoalsIndexImport } from './routes/(isAuthenticated)/_auth/completedgoals/index'
 import { Route as isAuthenticatedAuthAllgoalsIndexImport } from './routes/(isAuthenticated)/_auth/allgoals/index'
 import { Route as isAuthenticatedAuthActivegoalsIndexImport } from './routes/(isAuthenticated)/_auth/activegoals/index'
+import { Route as isAuthenticatedAuthEditEditIdImport } from './routes/(isAuthenticated)/_auth/edit/$editId'
 import { Route as isAuthenticatedAuthDashboardGoalGoalIdImport } from './routes/(isAuthenticated)/_auth/dashboard/goal/$goalId'
 
 // Create Virtual Routes
@@ -122,6 +123,13 @@ const isAuthenticatedAuthActivegoalsIndexRoute =
     getParentRoute: () => isAuthenticatedAuthRoute,
   } as any)
 
+const isAuthenticatedAuthEditEditIdRoute =
+  isAuthenticatedAuthEditEditIdImport.update({
+    id: '/edit/$editId',
+    path: '/edit/$editId',
+    getParentRoute: () => isAuthenticatedAuthRoute,
+  } as any)
+
 const isAuthenticatedAuthDashboardGoalGoalIdRoute =
   isAuthenticatedAuthDashboardGoalGoalIdImport.update({
     id: '/dashboard/goal/$goalId',
@@ -189,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QrcodenewViewPlanIndexImport
       parentRoute: typeof rootRoute
     }
+    '/(isAuthenticated)/_auth/edit/$editId': {
+      id: '/(isAuthenticated)/_auth/edit/$editId'
+      path: '/edit/$editId'
+      fullPath: '/edit/$editId'
+      preLoaderRoute: typeof isAuthenticatedAuthEditEditIdImport
+      parentRoute: typeof isAuthenticatedAuthImport
+    }
     '/(isAuthenticated)/_auth/activegoals/': {
       id: '/(isAuthenticated)/_auth/activegoals/'
       path: '/activegoals'
@@ -244,6 +259,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface isAuthenticatedAuthRouteChildren {
+  isAuthenticatedAuthEditEditIdRoute: typeof isAuthenticatedAuthEditEditIdRoute
   isAuthenticatedAuthActivegoalsIndexRoute: typeof isAuthenticatedAuthActivegoalsIndexRoute
   isAuthenticatedAuthAllgoalsIndexRoute: typeof isAuthenticatedAuthAllgoalsIndexRoute
   isAuthenticatedAuthCompletedgoalsIndexRoute: typeof isAuthenticatedAuthCompletedgoalsIndexRoute
@@ -254,6 +270,7 @@ interface isAuthenticatedAuthRouteChildren {
 }
 
 const isAuthenticatedAuthRouteChildren: isAuthenticatedAuthRouteChildren = {
+  isAuthenticatedAuthEditEditIdRoute: isAuthenticatedAuthEditEditIdRoute,
   isAuthenticatedAuthActivegoalsIndexRoute:
     isAuthenticatedAuthActivegoalsIndexRoute,
   isAuthenticatedAuthAllgoalsIndexRoute: isAuthenticatedAuthAllgoalsIndexRoute,
@@ -289,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
   '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
+  '/edit/$editId': typeof isAuthenticatedAuthEditEditIdRoute
   '/activegoals': typeof isAuthenticatedAuthActivegoalsIndexRoute
   '/allgoals': typeof isAuthenticatedAuthAllgoalsIndexRoute
   '/completedgoals': typeof isAuthenticatedAuthCompletedgoalsIndexRoute
@@ -305,6 +323,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
   '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
+  '/edit/$editId': typeof isAuthenticatedAuthEditEditIdRoute
   '/activegoals': typeof isAuthenticatedAuthActivegoalsIndexRoute
   '/allgoals': typeof isAuthenticatedAuthAllgoalsIndexRoute
   '/completedgoals': typeof isAuthenticatedAuthCompletedgoalsIndexRoute
@@ -324,6 +343,7 @@ export interface FileRoutesById {
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/(auth)/sign-up/': typeof authSignUpIndexRoute
   '/qrcodenew/view-plan/': typeof QrcodenewViewPlanIndexRoute
+  '/(isAuthenticated)/_auth/edit/$editId': typeof isAuthenticatedAuthEditEditIdRoute
   '/(isAuthenticated)/_auth/activegoals/': typeof isAuthenticatedAuthActivegoalsIndexRoute
   '/(isAuthenticated)/_auth/allgoals/': typeof isAuthenticatedAuthAllgoalsIndexRoute
   '/(isAuthenticated)/_auth/completedgoals/': typeof isAuthenticatedAuthCompletedgoalsIndexRoute
@@ -342,6 +362,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/qrcodenew/view-plan'
+    | '/edit/$editId'
     | '/activegoals'
     | '/allgoals'
     | '/completedgoals'
@@ -357,6 +378,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/qrcodenew/view-plan'
+    | '/edit/$editId'
     | '/activegoals'
     | '/allgoals'
     | '/completedgoals'
@@ -374,6 +396,7 @@ export interface FileRouteTypes {
     | '/(auth)/sign-in/'
     | '/(auth)/sign-up/'
     | '/qrcodenew/view-plan/'
+    | '/(isAuthenticated)/_auth/edit/$editId'
     | '/(isAuthenticated)/_auth/activegoals/'
     | '/(isAuthenticated)/_auth/allgoals/'
     | '/(isAuthenticated)/_auth/completedgoals/'
@@ -436,6 +459,7 @@ export const routeTree = rootRoute
       "filePath": "(isAuthenticated)/_auth.tsx",
       "parent": "/(isAuthenticated)",
       "children": [
+        "/(isAuthenticated)/_auth/edit/$editId",
         "/(isAuthenticated)/_auth/activegoals/",
         "/(isAuthenticated)/_auth/allgoals/",
         "/(isAuthenticated)/_auth/completedgoals/",
@@ -459,6 +483,10 @@ export const routeTree = rootRoute
     },
     "/qrcodenew/view-plan/": {
       "filePath": "qrcodenew/view-plan/index.tsx"
+    },
+    "/(isAuthenticated)/_auth/edit/$editId": {
+      "filePath": "(isAuthenticated)/_auth/edit/$editId.tsx",
+      "parent": "/(isAuthenticated)/_auth"
     },
     "/(isAuthenticated)/_auth/activegoals/": {
       "filePath": "(isAuthenticated)/_auth/activegoals/index.tsx",

@@ -8,14 +8,13 @@ type usercreate = {
   email: string;
   password: string;
 };
-/* type goal = {
+type goal = {
   name: string,
   description: string
   status: string
-  due_date: Date
-  cover_image: File | null
+  due_date: string
 }
- */
+
 export const client = {
   async getExample() {
     const name = "abdulshakour";
@@ -116,7 +115,7 @@ export const client = {
         `/user/create-profile`,
         data,
       );
-      console.log("US", response);
+      console.log("US-to", response);
       return response.data;
     } catch (error: unknown) {
       console.log("sothis is", error);
@@ -141,6 +140,26 @@ export const client = {
     }
   },
 
+  async updateGoal(id: string, data: goal) {
+
+    console.log("UPDate", data)
+    try {
+      const response = await userDataInstance.patch(`/goals/update/${id}`, data, {});
+      return response.data;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  },
+
+
+
+
+
+
+
+
+
   async getGoals(offset: number, limit: number) {
     console.log("wharr", offset, "l", limit);
     try {
@@ -159,7 +178,7 @@ export const client = {
   },
 
   async getGoal(id: string) {
-    console.log("getPlan", id);
+    console.log("getGoal", id);
     try {
       const response = await userDataInstance.get(`/goals/goal/${id}`);
       return response.data;
@@ -185,6 +204,20 @@ export const client = {
       }
     }
   },
+
+  /*   async Qrcodegenerate(goalId: string) {
+      try {
+        const response = await userDataInstance.get(`/qrcode/generate-permanent-qr/${goalId}`);
+        console.log("QRRRRRRRR", response)
+        return response.data;
+      } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+          if (error.response) {
+            throw new Error(error.response.data.detail);
+          }
+        }
+      }
+    } */
 
   //motivations
 

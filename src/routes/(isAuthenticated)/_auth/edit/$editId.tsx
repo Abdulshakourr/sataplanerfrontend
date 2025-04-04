@@ -1,10 +1,10 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 
-export const Route = createFileRoute("/(isAuthenticated)/_auth/new-goal/")({
-  component: GoalFormPage,
-});
+export const Route = createFileRoute('/(isAuthenticated)/_auth/edit/$editId')({
+  component: RouteComponent,
+})
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -31,7 +31,7 @@ import {
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useCreategoal } from "@/api/hooks/hook";
+import { useGetGoal, useUpdategoal } from "@/api/hooks/hook";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 ;
@@ -62,55 +62,91 @@ const formSchema = z.object({
     }),
 });
 
-export default function GoalFormPage() {
+
+
+
+
+
+function RouteComponent() {
+
+  const { editId } = Route.useParams()
+  console.log("edit", editId)
   const router = useRouter();
   const [cover_image, setCover_image] = useState<File | null>(null)
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const queryClient = useQueryClient()
   const onSucess = () => {
     queryClient.invalidateQueries({ queryKey: ["goals"] })
   }
 
-  const { mutate, isPending, isSuccess, data, isError, error } = useCreategoal(onSucess)
+  const { mutate, isPending, isSuccess, data, isError, error } = useUpdategoal(editId, onSucess)
+  const { data: goalData, isLoading } = useGetGoal(editId)
+
+
+
+
+  const [previewImage, setPreviewImage] = useState<string | null>(goalData?.cover_image || null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      description: "",
+      name: goalData?.name || "",
+      description: goalData?.description || "",
+      due_date: goalData?.due_date ? new Date(goalData.due_date) : undefined
     },
-  });
+  });;
+
+
+
+
+  useEffect(() => {
+    if (goalData) {
+      form.reset({
+        name: goalData.name,
+        description: goalData.description,
+        due_date: new Date(goalData.due_date)
+      });
+      if (goalData.cover_image) {
+        setPreviewImage(goalData.cover_image);
+      }
+    }
+  }, [goalData, form]);
+
+
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!cover_image) return;
-
     const formData = new FormData();
     formData.append('name', values.name);
     formData.append('description', values.description);
     formData.append('status', 'ACTIVE');
     formData.append('due_date', values.due_date.toISOString().split('T')[0]);
+    const data = { name: values.name, description: values.description, due_date: format(values.due_date, 'yyyy-MM-dd'), status: goalData.status }
+    // Only append cover_image if a new one was selected
+    /*    if (cover_image) {
+         formData.append(
+           'cover_image',
+           new File([cover_image], cover_image.name, { type: cover_image.type }),
+           cover_image.name
+         );
+       } */
 
-    // Critical Fix 1: Add file type explicitly like cURL does
-    formData.append(
-      'cover_image',
-      new File([cover_image], cover_image.name, { type: 'image/png' }), // Explicit MIME type
-      cover_image.name
-    );
-
-    mutate(formData)
+    mutate(data);
   };
 
   if (isError) {
-    console.log("ER", error)
+    toast({
+      title: "Error",
+      description: error.message || "Failed to update goal",
+      variant: "destructive",
+    });
   }
 
   if (isSuccess) {
-    console.log("ddd", data)
+    console.log("dddUPdated", data)
     toast({
       title: "Goal Completed",
       description: data.message,
     });
-    router.navigate({ to: "/dashboard/goal/$goalId", params: { goalId: data.goal_id } })
+    router.navigate({ to: "/dashboard/goal/$goalId", params: { goalId: data.id } })
   }
 
 
@@ -128,6 +164,8 @@ export default function GoalFormPage() {
   };
 
 
+  if (isLoading) return <div>Loading...</div>
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -136,7 +174,7 @@ export default function GoalFormPage() {
       className="max-w-3xl mx-auto px-4 sm:px-6 py-8"
     >
       {/* Header with back button */}
-      <div className="flex items-center mb-8">
+      <div className="flex items-center justify-between mb-6">
         <Button
           variant="ghost"
           size="lg"
@@ -147,8 +185,8 @@ export default function GoalFormPage() {
           Back to Dashboard
         </Button>
         <div className="ml-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-            Create New Goal
+          <h1 className="text-sm sm:text-xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+            Edit goal
           </h1>
         </div>
       </div>
@@ -315,12 +353,12 @@ export default function GoalFormPage() {
                     >
                       <Target className="h-5 w-5" />
                     </motion.span>
-                    Creating Goal...
+                    Updating Goal...
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
                     <Target className="h-5 w-5" />
-                    Create Goal
+                    Update Goal
                   </span>
                 )}
 
@@ -329,6 +367,6 @@ export default function GoalFormPage() {
           </form>
         </Form>
       </div>
-    </motion.div>
-  );
+    </motion.div >
+  )
 }

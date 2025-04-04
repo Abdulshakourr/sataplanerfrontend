@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,10 @@ import {
 import {
   ArrowLeft,
   Edit,
-  Share2,
   Target,
   QrCode,
   Calendar,
+  Trash2,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
@@ -25,7 +25,8 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import MotivationView from "@/components/MotivationView";
-import { useGetGoal, useGetMotivation } from "@/api/hooks/hook";
+import { useGetGoal, useGetMotivation, useGoalDelete } from "@/api/hooks/hook";
+import { userDataInstance } from "@/api/client/axiosInstance";
 
 export const Route = createFileRoute(
   "/(isAuthenticated)/_auth/dashboard/goal/$goalId",
@@ -36,14 +37,23 @@ export const Route = createFileRoute(
 function Index() {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [qrCode, setQrCode] = useState<string | null>(null);
   const { goalId } = Route.useParams();
   console.log("iddddd", goalId);
   const { data, isPending, isError, error } = useGetGoal(goalId);
 
   const { data: motivation, isLoading: loads } = useGetMotivation(goalId);
+  const { mutate, isSuccess, isError: deleteEroro, error: deleror } = useGoalDelete()
+  const router = useRouter()
+
+
+
 
   // Clear previous data while loading new data
   const displayMotivation = loads ? undefined : motivation;
+
+
+
 
   if (isError) {
     return (
@@ -63,33 +73,76 @@ function Index() {
     );
   }
 
-  const generateQr = () => {
+  if (deleteEroro) {
+    console.error("deleting", deleror.message)
+  }
+  if (isSuccess) {
+    return router.navigate({ to: "/dashboard" })
+  }
+
+
+  const generateQr = async () => {
     setLoading(true);
-    // Mock API call for demo - replace with actual API call
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await userDataInstance.get(
+        `/qrcode/generate-permanent-qr/${goalId}`,
+        { responseType: 'blob' } // Important for binary data
+      );
+
+      // Create object URL from the blob
+      const url = URL.createObjectURL(response.data);
+      setQrCode(url);
+
       toast({
         title: "QR Code Generated",
         description: "Share this goal with others using the QR code",
       });
-      setIsShareDialogOpen(false);
-    }, 1000);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate QR code",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const downloadQrCode = () => {
+    if (!qrCode) return;
+
+    const link = document.createElement('a');
+    link.href = qrCode;
+    link.download = `goal-${goalId}-qrcode.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+
   const handleCompleteGoal = () => {
+    console.log("compeleted", data.id)
     toast({
       title: "Goal Completed",
       description: "Congratulations on achieving your goal!",
     });
   };
 
+
+  const handleDelete = (id: string) => {
+    console.log("deleted", id)
+    mutate(id)
+  }
+
+
+
   const isOverdue =
     data?.status === "ACTIVE" && new Date(data?.due_date) < new Date();
   const daysRemaining = data?.due_date
     ? Math.ceil(
-        (new Date(data.due_date).getTime() - Date.now()) /
-          (1000 * 60 * 60 * 24),
-      )
+      (new Date(data.due_date).getTime() - Date.now()) /
+      (1000 * 60 * 60 * 24),
+    )
     : 0;
 
   return (
@@ -102,7 +155,7 @@ function Index() {
           className="space-y-8"
         >
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-y-4 sm:gap-y-0 items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
@@ -117,12 +170,15 @@ function Index() {
 
             <div className="flex gap-2">
               <Button
+                asChild
                 variant="outline"
                 size="sm"
                 className="border-slate-200 text-slate-700 hover:bg-slate-100"
               >
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
+                <Link to="/edit/$editId" params={{ editId: goalId }} className="flex gap-2">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Link>
               </Button>
 
               {/* Qr-code Dialog */}
@@ -130,7 +186,7 @@ function Index() {
                 open={isShareDialogOpen}
                 onOpenChange={setIsShareDialogOpen}
               >
-                <DialogTrigger asChild>
+                <DialogTrigger>
                   <Button
                     variant="outline"
                     size="sm"
@@ -150,24 +206,68 @@ function Index() {
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex flex-col items-center py-6 gap-4">
-                    <div className="p-4 bg-primary/10 rounded-full">
-                      <Share2 className="h-8 w-8 text-primary" />
-                    </div>
-                    <p className="text-sm text-center text-muted-foreground">
-                      Anyone with the QR code can view this goal
-                    </p>
+                    {qrCode ? (
+                      <>
+                        <img
+                          src={qrCode}
+                          alt="QR Code"
+                          className="w-48 h-48 object-contain border rounded-lg"
+                        />
+                        <Button
+                          onClick={downloadQrCode}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          Download QR Code
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="p-4 bg-primary/10 rounded-full">
+                          <QrCode className="h-8 w-8 text-primary" />
+                        </div>
+                        <p className="text-sm text-center text-muted-foreground">
+                          Generate a QR code to share this goal
+                        </p>
+                      </>
+                    )}
                   </div>
-                  <DialogFooter>
+                  <DialogFooter className="flex gap-2">
+                    {qrCode && (
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.href);
+                          toast({
+                            title: "Copied!",
+                            description: "Goal link copied to clipboard",
+                          });
+                        }}
+                      >
+                        Copy Link
+                      </Button>
+                    )}
                     <Button
                       onClick={generateQr}
                       disabled={loading}
                       className="w-full"
                     >
-                      {loading ? "Generating..." : "Generate QR Code"}
+                      {loading ? "Generating..." : qrCode ? "Regenerate" : "Generate QR Code"}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+              {/**delete button */}
+              <Button
+                onClick={() => handleDelete(goalId)}
+                size="sm"
+                className="bg-red-50 hover:bg-red-50 px-3 text-red-600"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+              </Button>
+
+
+
             </div>
           </div>
 
@@ -215,10 +315,10 @@ function Index() {
                     "text-sm px-3 py-1 font-medium",
                     isOverdue && "bg-red-100 text-red-600 hover:bg-red-200",
                     data?.status === "ACTIVE" &&
-                      !isOverdue &&
-                      "bg-green-100 text-green-700 hover:bg-green-200",
+                    !isOverdue &&
+                    "bg-green-100 text-green-700 hover:bg-green-200",
                     data?.status === "COMPLETED" &&
-                      "bg-slate-100 text-slate-700 hover:bg-slate-200",
+                    "bg-slate-100 text-slate-700 hover:bg-slate-200",
                   )}
                 >
                   {data?.status}
@@ -299,12 +399,12 @@ function Index() {
                               className={cn(
                                 "text-xs px-2 py-0",
                                 isOverdue &&
-                                  "bg-red-100 text-red-600 hover:bg-red-200",
+                                "bg-red-100 text-red-600 hover:bg-red-200",
                                 data?.status === "ACTIVE" &&
-                                  !isOverdue &&
-                                  "bg-green-100 text-green-700 hover:bg-green-200",
+                                !isOverdue &&
+                                "bg-green-100 text-green-700 hover:bg-green-200",
                                 data?.status === "COMPLETED" &&
-                                  "bg-slate-100 text-slate-700 hover:bg-slate-200",
+                                "bg-slate-100 text-slate-700 hover:bg-slate-200",
                               )}
                             >
                               {data?.status}
@@ -320,13 +420,13 @@ function Index() {
                             <span className="text-sm font-medium text-slate-700">
                               {data?.created_at
                                 ? new Date(data.created_at).toLocaleDateString(
-                                    "en-US",
-                                    {
-                                      month: "short",
-                                      day: "numeric",
-                                      year: "numeric",
-                                    },
-                                  )
+                                  "en-US",
+                                  {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  },
+                                )
                                 : "N/A"}
                             </span>
                           </div>

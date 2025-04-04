@@ -37,6 +37,7 @@ function RouteComponent() {
   const { mutate, isPending, isSuccess, data } = useMutation({
     mutationFn: async (data: { goal_id: number, password: string }) => {
       console.log("m", data.goal_id, data.password)
+      // 'https://goalset-ae9h.onrender.com/api/v1/qrcode/verify-goal-access?goal_id=9f8c00f6-8dcf-4da1-812b-ca49206b36a1&password=Abdulshakour1%40' \
       const response = await axios.post(`${Base_URL}/qrcode/verify-goal-access?goal_id=${data.goal_id}&password=${data.password}`)
       return response.data
     }

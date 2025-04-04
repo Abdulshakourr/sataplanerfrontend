@@ -24,9 +24,6 @@ export const Route = createFileRoute("/(isAuthenticated)/_auth/dashboard/")({
 function DashboardPage() {
   const { user } = useAuthStore();
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [itemsPerPage, setItemsPerPage] = useState(10);
-  // const [searchTerm, setSearchTerm] = useState("");
 
   const {
     data: goalData,
@@ -36,7 +33,6 @@ function DashboardPage() {
   } = useUserGoals({
     offset: 0,
     limit: 10,
-    search: "",
   });
 
   const goals = goalData?.goals;
