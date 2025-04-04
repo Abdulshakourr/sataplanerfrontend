@@ -150,18 +150,18 @@ function RouteComponent() {
   }
 
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    // if (file) {
-    //   setCover_image(file)
-    //   const reader = new FileReader();
-    //   console.log("fl", reader)
-    //   reader.onloadend = () => {
-    //     setPreviewImage(reader.result as string);
-    //   };
-    //   reader.readAsDataURL(file);
-    // }
-  };
+  /*   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      // if (file) {
+      //   setCover_image(file)
+      //   const reader = new FileReader();
+      //   console.log("fl", reader)
+      //   reader.onloadend = () => {
+      //     setPreviewImage(reader.result as string);
+      //   };
+      //   reader.readAsDataURL(file);
+      // }
+    }; */
 
 
   if (isLoading) return <div>Loading...</div>
@@ -321,13 +321,13 @@ function RouteComponent() {
                       </div>
                     </>
                   )}
-                  <Input
+                  {/*       <Input
                     id="cover-image"
                     type="file"
                     accept="image/*"
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     onChange={handleImageChange}
-                  />
+                  /> */}
                 </div>
               </div>
             </div>
