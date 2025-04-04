@@ -72,7 +72,7 @@ function RouteComponent() {
   const { editId } = Route.useParams()
   console.log("edit", editId)
   const router = useRouter();
-  const [cover_image, setCover_image] = useState<File | null>(null)
+  /*   const [cover_image, setCover_image] = useState<File | null>(null) */
   const queryClient = useQueryClient()
   const onSucess = () => {
     queryClient.invalidateQueries({ queryKey: ["goals"] })
@@ -152,15 +152,15 @@ function RouteComponent() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setCover_image(file)
-      const reader = new FileReader();
-      console.log("fl", reader)
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    // if (file) {
+    //   setCover_image(file)
+    //   const reader = new FileReader();
+    //   console.log("fl", reader)
+    //   reader.onloadend = () => {
+    //     setPreviewImage(reader.result as string);
+    //   };
+    //   reader.readAsDataURL(file);
+    // }
   };
 
 
@@ -295,14 +295,14 @@ function RouteComponent() {
                         alt="Preview"
                         className="w-full h-48 object-cover rounded-lg mb-4"
                       />
-                      <Button
+                      {/*             <Button
                         variant="ghost"
                         size="sm"
                         className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm"
                         onClick={() => setPreviewImage(null)}
                       >
                         Change
-                      </Button>
+                      </Button> */}
                     </div>
                   ) : (
                     <>
