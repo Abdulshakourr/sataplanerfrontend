@@ -1,14 +1,11 @@
 import { useUserGoals } from "@/api/hooks/hook";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-,
   Plus,
   Target,
-
   Search,
 } from "lucide-react";
 import { useState } from "react";
