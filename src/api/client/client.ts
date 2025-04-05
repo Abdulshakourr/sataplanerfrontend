@@ -136,7 +136,11 @@ export const client = {
       return response.data;
     } catch (error) {
       console.error("Error:", error);
-      throw error;
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          throw new Error(error.response.data.detail);
+        }
+      }
     }
   },
 
@@ -230,9 +234,10 @@ export const client = {
       const response = userDataInstance.post(`/motivations/${id}`, data);
       return (await response).data;
     } catch (error: unknown) {
+      console.log("ERRRo", error)
       if (error instanceof AxiosError) {
         if (error.response) {
-          throw new Error(error.response.data);
+          throw new Error(error.response.data.detail);
         }
       }
     }

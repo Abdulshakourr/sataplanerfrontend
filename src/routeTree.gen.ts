@@ -14,8 +14,8 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
-import { Route as TestIndexImport } from './routes/test/index'
 import { Route as PrivateIndexImport } from './routes/private/index'
+import { Route as LearnIndexImport } from './routes/learn/index'
 import { Route as isAuthenticatedAuthImport } from './routes/(isAuthenticated)/_auth'
 import { Route as QrcodenewViewPlanIndexImport } from './routes/qrcodenew/view-plan/index'
 import { Route as authSignUpIndexImport } from './routes/(auth)/sign-up/index'
@@ -46,15 +46,15 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const TestIndexRoute = TestIndexImport.update({
-  id: '/test/',
-  path: '/test/',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const PrivateIndexRoute = PrivateIndexImport.update({
   id: '/private/',
   path: '/private/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LearnIndexRoute = LearnIndexImport.update({
+  id: '/learn/',
+  path: '/learn/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -162,18 +162,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof isAuthenticatedAuthImport
       parentRoute: typeof isAuthenticatedRoute
     }
+    '/learn/': {
+      id: '/learn/'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof LearnIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/private/': {
       id: '/private/'
       path: '/private'
       fullPath: '/private'
       preLoaderRoute: typeof PrivateIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/test/': {
-      id: '/test/'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestIndexImport
       parentRoute: typeof rootRoute
     }
     '/(auth)/sign-in/': {
@@ -301,8 +301,8 @@ const isAuthenticatedRouteWithChildren = isAuthenticatedRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof isAuthenticatedAuthRouteWithChildren
+  '/learn': typeof LearnIndexRoute
   '/private': typeof PrivateIndexRoute
-  '/test': typeof TestIndexRoute
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
   '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
@@ -318,8 +318,8 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof isAuthenticatedAuthRouteWithChildren
+  '/learn': typeof LearnIndexRoute
   '/private': typeof PrivateIndexRoute
-  '/test': typeof TestIndexRoute
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
   '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
@@ -338,8 +338,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/(isAuthenticated)': typeof isAuthenticatedRouteWithChildren
   '/(isAuthenticated)/_auth': typeof isAuthenticatedAuthRouteWithChildren
+  '/learn/': typeof LearnIndexRoute
   '/private/': typeof PrivateIndexRoute
-  '/test/': typeof TestIndexRoute
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/(auth)/sign-up/': typeof authSignUpIndexRoute
   '/qrcodenew/view-plan/': typeof QrcodenewViewPlanIndexRoute
@@ -357,8 +357,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/learn'
     | '/private'
-    | '/test'
     | '/sign-in'
     | '/sign-up'
     | '/qrcodenew/view-plan'
@@ -373,8 +373,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/learn'
     | '/private'
-    | '/test'
     | '/sign-in'
     | '/sign-up'
     | '/qrcodenew/view-plan'
@@ -391,8 +391,8 @@ export interface FileRouteTypes {
     | '/'
     | '/(isAuthenticated)'
     | '/(isAuthenticated)/_auth'
+    | '/learn/'
     | '/private/'
-    | '/test/'
     | '/(auth)/sign-in/'
     | '/(auth)/sign-up/'
     | '/qrcodenew/view-plan/'
@@ -410,8 +410,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   isAuthenticatedRoute: typeof isAuthenticatedRouteWithChildren
+  LearnIndexRoute: typeof LearnIndexRoute
   PrivateIndexRoute: typeof PrivateIndexRoute
-  TestIndexRoute: typeof TestIndexRoute
   authSignInIndexRoute: typeof authSignInIndexRoute
   authSignUpIndexRoute: typeof authSignUpIndexRoute
   QrcodenewViewPlanIndexRoute: typeof QrcodenewViewPlanIndexRoute
@@ -420,8 +420,8 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   isAuthenticatedRoute: isAuthenticatedRouteWithChildren,
+  LearnIndexRoute: LearnIndexRoute,
   PrivateIndexRoute: PrivateIndexRoute,
-  TestIndexRoute: TestIndexRoute,
   authSignInIndexRoute: authSignInIndexRoute,
   authSignUpIndexRoute: authSignUpIndexRoute,
   QrcodenewViewPlanIndexRoute: QrcodenewViewPlanIndexRoute,
@@ -439,8 +439,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/(isAuthenticated)",
+        "/learn/",
         "/private/",
-        "/test/",
         "/(auth)/sign-in/",
         "/(auth)/sign-up/",
         "/qrcodenew/view-plan/"
@@ -469,11 +469,11 @@ export const routeTree = rootRoute
         "/(isAuthenticated)/_auth/dashboard/goal/$goalId"
       ]
     },
+    "/learn/": {
+      "filePath": "learn/index.tsx"
+    },
     "/private/": {
       "filePath": "private/index.tsx"
-    },
-    "/test/": {
-      "filePath": "test/index.tsx"
     },
     "/(auth)/sign-in/": {
       "filePath": "(auth)/sign-in/index.tsx"

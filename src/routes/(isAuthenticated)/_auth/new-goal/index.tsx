@@ -33,8 +33,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCreategoal } from "@/api/hooks/hook";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "@/hooks/use-toast";
-;
+import toast from "react-hot-toast";
+
 
 const formSchema = z.object({
   name: z
@@ -102,14 +102,12 @@ export default function GoalFormPage() {
 
   if (isError) {
     console.log("ER", error)
+    toast.error(error.message)
   }
 
   if (isSuccess) {
     console.log("ddd", data)
-    toast({
-      title: "Goal Completed",
-      description: data.message,
-    });
+    toast.success(data.message)
     router.navigate({ to: "/dashboard/goal/$goalId", params: { goalId: data.goal_id } })
   }
 

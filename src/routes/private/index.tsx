@@ -14,7 +14,7 @@ import { z } from 'zod'
 export const Route = createFileRoute('/private/')({
   component: RouteComponent,
   validateSearch: z.object({
-    goal_id: z.number().catch(0)
+    goal_id: z.string()
   }),
 })
 

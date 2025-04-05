@@ -127,7 +127,7 @@ function StatsSection({ goals, loading }: { goals?: any[]; loading: boolean }) {
   const stats = {
     total: goals?.length || 0,
     active: goals?.filter((g) => g.status === "ACTIVE").length || 0,
-    completed: goals?.filter((g) => g.status === "COMPLETED").length || 0,
+    achieved: goals?.filter((g) => g.status === "ACHIEVED").length || 0,
   };
 
   return (
@@ -156,10 +156,10 @@ function StatsSection({ goals, loading }: { goals?: any[]; loading: boolean }) {
             trend={stats.active > 0 ? "up" : "none"}
           />
           <StatCard
-            title="Completed"
-            value={stats.completed}
+            title="Achieved Goals"
+            value={stats.achieved}
             icon={<CheckCircle className="h-6 w-6 text-green-500" />}
-            trend={stats.completed > 0 ? "up" : "none"}
+            trend={stats.achieved > 0 ? "up" : "none"}
           />
         </>
       )}

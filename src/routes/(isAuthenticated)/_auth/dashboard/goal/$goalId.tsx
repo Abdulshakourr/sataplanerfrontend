@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,8 +24,10 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import MotivationView from "@/components/MotivationView";
-import { useGetGoal, useGetMotivation, useGoalDelete } from "@/api/hooks/hook";
+import { useGetGoal, useGetMotivation, useGoalDelete, useUpdategoal } from "@/api/hooks/hook";
 import { userDataInstance } from "@/api/client/axiosInstance";
+import { useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns/format";
 
 export const Route = createFileRoute(
   "/(isAuthenticated)/_auth/dashboard/goal/$goalId",
@@ -44,16 +45,25 @@ function Index() {
 
   const { data: motivation, isLoading: loads } = useGetMotivation(goalId);
   const { mutate, isSuccess, isError: deleteEroro, error: deleror } = useGoalDelete()
+  const { mutate: update, isSuccess: updated } = useUpdategoal(data?.id, onSucess)
   const router = useRouter()
+  const queryClient = useQueryClient()
 
+  useEffect(() => {
+    if (updated) {
+      toast({
+        title: "Goal Achieved",
+        description: "Congratulations on achieving your goal!",
+      });
+    }
+  }, [updated]);
 
-
+  function onSucess() {
+    queryClient.invalidateQueries({ queryKey: ["goals"] })
+  }
 
   // Clear previous data while loading new data
   const displayMotivation = loads ? undefined : motivation;
-
-
-
 
   if (isError) {
     return (
@@ -80,16 +90,14 @@ function Index() {
     return router.navigate({ to: "/dashboard" })
   }
 
-
   const generateQr = async () => {
     setLoading(true);
     try {
       const response = await userDataInstance.get(
         `/qrcode/generate-permanent-qr/${goalId}`,
-        { responseType: 'blob' } // Important for binary data
+        { responseType: 'blob' }
       );
 
-      // Create object URL from the blob
       const url = URL.createObjectURL(response.data);
       setQrCode(url);
 
@@ -119,22 +127,19 @@ function Index() {
     document.body.removeChild(link);
   };
 
-
   const handleCompleteGoal = () => {
-    console.log("compeleted", data.id)
-    toast({
-      title: "Goal Completed",
-      description: "Congratulations on achieving your goal!",
-    });
+    const upData = {
+      name: data?.name,
+      description: data?.description,
+      due_date: format(data?.due_date, 'yyyy-MM-dd'),
+      status: "ACHIEVED"
+    }
+    update(upData)
   };
 
-
   const handleDelete = (id: string) => {
-    console.log("deleted", id)
     mutate(id)
   }
-
-
 
   const isOverdue =
     data?.status === "ACTIVE" && new Date(data?.due_date) < new Date();
@@ -265,9 +270,6 @@ function Index() {
               >
                 <Trash2 className="h-4 w-4 mr-2" />
               </Button>
-
-
-
             </div>
           </div>
 
@@ -309,7 +311,7 @@ function Index() {
 
                 <Badge
                   variant={
-                    data?.status === "COMPLETED" ? "secondary" : "default"
+                    data?.status === "ACHIEVED" ? "secondary" : "default"
                   }
                   className={cn(
                     "text-sm px-3 py-1 font-medium",
@@ -317,7 +319,7 @@ function Index() {
                     data?.status === "ACTIVE" &&
                     !isOverdue &&
                     "bg-green-100 text-green-700 hover:bg-green-200",
-                    data?.status === "COMPLETED" &&
+                    data?.status === "ACHIEVED" &&
                     "bg-slate-100 text-slate-700 hover:bg-slate-200",
                   )}
                 >
@@ -392,7 +394,7 @@ function Index() {
                             </span>
                             <Badge
                               variant={
-                                data?.status === "COMPLETED"
+                                data?.status === "ACHIEVED"
                                   ? "secondary"
                                   : "default"
                               }
@@ -403,7 +405,7 @@ function Index() {
                                 data?.status === "ACTIVE" &&
                                 !isOverdue &&
                                 "bg-green-100 text-green-700 hover:bg-green-200",
-                                data?.status === "COMPLETED" &&
+                                data?.status === "ACHIEVED" &&
                                 "bg-slate-100 text-slate-700 hover:bg-slate-200",
                               )}
                             >
@@ -466,7 +468,7 @@ function Index() {
                       onClick={handleCompleteGoal}
                       className="w-full bg-green-600 hover:bg-green-700 text-white"
                     >
-                      Mark as Completed
+                      Mark as Achieved
                     </Button>
                   )}
                 </div>

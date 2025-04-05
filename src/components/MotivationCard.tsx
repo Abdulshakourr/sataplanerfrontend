@@ -1,30 +1,55 @@
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Quote } from "lucide-react";
+import { Quote, Trash2 } from "lucide-react";
 import ReactPlayer from "react-player";
+import { Button } from "./ui/button";
+import { useDeleteMotivation } from "@/api/hooks/hook";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 
 interface MotivationItem {
   id: string;
   quote?: string;
   link?: string;
+  Goal_id: string;
 }
-
-// interface MotivationProp {
-//   data: MotivationItem[] | undefined;
-//   loads: boolean;
-//   id: string;
-// }
 
 interface MotivationCardProps {
   data: MotivationItem;
 }
 
 export default function MotivationCard({ data }: MotivationCardProps) {
+  const queryClient = useQueryClient();
+  const { mutate: deleteMotivation, isPending } = useDeleteMotivation();
   const hasQuote = !!data?.quote;
   const hasVideo = !!data?.link;
 
+  const handleDelete = () => {
+    deleteMotivation(data.id, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["goals", "motivation", data.Goal_id] });
+        toast.success("Motivation deleted successfully");
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to delete motivation");
+      }
+    });
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative group">
+      {/* Delete Button - Only shows on hover */}
+      <Button
+        variant="ghost"
+        size="sm"
+        className="absolute right-2 top-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-600 hover:bg-red-50"
+        onClick={handleDelete}
+        disabled={isPending}
+
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+
       {hasVideo && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}

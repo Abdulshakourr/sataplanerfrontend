@@ -22,6 +22,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
+import GoalCard from "@/components/GoalCard";
 
 export const Route = createFileRoute("/(isAuthenticated)/_auth/allgoals/")({
   component: AllGoalsPage,
@@ -87,17 +88,14 @@ function AllGoalsPage() {
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-24">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-foreground bg-clip-text text-transparent">
-            Goal Dashboard
+          <h1 className="text-2xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-foreground bg-clip-text text-transparent">
+            All Goals
           </h1>
-          <p className="text-muted-foreground mt-2">
-            Track and manage your objectives
-          </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mb-4">
           <form onSubmit={handleSearch} className="flex-1 sm:w-80 relative">
             <Input
               placeholder="Search goals..."
@@ -117,26 +115,13 @@ function AllGoalsPage() {
       </div>
 
       {isPending ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} className="h-48 w-full rounded-2xl" />
+            <Skeleton key={i} className="h-[400px]  w-full rounded-2xl" />
           ))}
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Button
-            asChild
-            variant="outline"
-            className="h-full min-h-48 border-2 border-dashed hover:border-primary hover:bg-muted/30 rounded-2xl flex flex-col items-center justify-center gap-2"
-          >
-            <Link to="/new-goal">
-              <Plus className="h-8 w-8 text-muted-foreground" />
-              <span className="font-medium text-muted-foreground">
-                Create New Goal
-              </span>
-            </Link>
-          </Button>
-
+        <div className="grid sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
           {goalsData?.total ? (
             goalsData.goals.map((goal: goal) => (
               <GoalCard key={goal.id} goal={goal} />
@@ -206,101 +191,3 @@ function AllGoalsPage() {
   );
 }
 
-function GoalCard({ goal }: { goal: goal }) {
-  const isOverdue =
-    goal.status === "ACTIVE" && new Date(goal.due_date) < new Date();
-  const daysRemaining = Math.ceil(
-    (new Date(goal.due_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
-  );
-
-  return (
-    <div className="group relative">
-      <Card className="h-full rounded-2xl transition-all hover:shadow-lg hover:-translate-y-1">
-        <CardContent className="p-0">
-          <div className="flex flex-col">
-            {goal.cover_image && (
-              <div className="relative h-48">
-                <img
-                  src={goal.cover_image}
-                  alt={goal.name}
-                  className="object-cover w-full h-full rounded-t-2xl"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                <div className="absolute right-1 top-2 ">
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "shrink-0 rounded-full px-3 py-1 text-xs font-medium",
-                      isOverdue
-                        ? "bg-red-500 text-white"
-                        : "bg-blue-500 text-white",
-                    )}
-                  >
-                    {isOverdue ? "OVERDUE" : "ACTIVE"}
-                  </Badge>
-                </div>
-              </div>
-            )}
-            <div className="p-6">
-              <div className="flex justify-between items-start gap-4 mb-4">
-                <h2 className="text-xl font-semibold text-start">
-                  {goal.name}
-                </h2>
-              </div>
-
-              <p className="text-muted-foreground  mb-4 text-start">
-                {goal.description}
-              </p>
-
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span
-                    className={`font-medium ${isOverdue && "text-red-500"} `}
-                  >
-                    {new Date(goal.due_date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2 text-sm">
-                  <AlertCircle className="h-4 w-4 text-muted-foreground" />
-                  <span
-                    className={cn(
-                      isOverdue ? "text-red-500" : "text-muted-foreground",
-                    )}
-                  >
-                    {isOverdue
-                      ? `Overdue by ${Math.abs(daysRemaining)} days`
-                      : `${Math.max(0, daysRemaining)} days remaining`}
-                  </span>
-                </div>
-              </div>
-
-              <Button
-                variant="ghost"
-                className="mt-6 w-full rounded-lg flex items-center justify-between px-4 py-3 bg-muted/50 hover:bg-muted"
-                asChild
-              >
-                <Link
-                  to={`/dashboard/goal/$goalId`}
-                  params={{ goalId: goal.id }}
-                >
-                  <span>View Details</span>
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function cn(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}

@@ -20,13 +20,13 @@ const DashboardSidebar = () => {
     limit: 10,
     search: "",
   });
-
   const stats = {
     total: goalsData?.total || 0,
     active: goalsData?.goals.filter((g: { status: string }) => g.status === "ACTIVE").length || 0,
     completed:
-      goalsData?.goals.filter((g: { status: string }) => g.status === "COMPLETED").length || 0,
+      goalsData?.goals.filter((g: { status: string }) => g.status === "ACHIEVED").length || 0,
   };
+
 
   return (
     <aside className="fixed  inset-y-0 left-0 w-56 bg-white border-r border-gray-200 hidden md:flex flex-col z-10">

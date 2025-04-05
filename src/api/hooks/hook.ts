@@ -101,7 +101,7 @@ export const useGetGoal = (id: string) =>
 
 export const useGetMotivation = (id: string) =>
   useQuery({
-    queryKey: ["goals", "motivation"],
+    queryKey: ["goals", "motivation", id],
     queryFn: () => client.getMotivations(id),
   });
 
@@ -112,5 +112,12 @@ export const useCreateMotivation = (id: string) =>
       quote: string | undefined;
     }) => client.createMotivation(data, id),
   });
+
+
+
+export const useDeleteMotivation = () =>
+  useMutation({
+    mutationFn: (id: string) => client.deleteMotivation(id),
+  })
 
 //
