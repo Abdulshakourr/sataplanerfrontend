@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button'
 import { Card, CardTitle } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -61,7 +60,7 @@ function RouteComponent() {
 
   const onSubmit = (value: z.infer<typeof formSchema>) => {
     console.log("v", value)
-    const data = { ...value, goal_id }
+    const data = { ...value, goal_id: parseInt(goal_id) }
     console.log(data)
     mutate(data)
   }

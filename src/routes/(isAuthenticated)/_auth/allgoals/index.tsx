@@ -28,14 +28,15 @@ export const Route = createFileRoute("/(isAuthenticated)/_auth/allgoals/")({
   component: AllGoalsPage,
 });
 
-type goal = {
+interface goal {
   id: string;
   name: string;
   description: string;
+  due_date: string;
   status: string;
-  due_date: Date;
-  cover_image: string | null;
-};
+  cover_image?: string;
+  created_at: string;
+}
 
 function AllGoalsPage() {
   const [currentPage, setCurrentPage] = useState(1);

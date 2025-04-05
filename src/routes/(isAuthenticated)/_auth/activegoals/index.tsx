@@ -35,6 +35,7 @@ interface goal {
   due_date: string;
   status: string;
   cover_image?: string;
+  created_at: string;
 }
 
 function AllGoalsPage() {

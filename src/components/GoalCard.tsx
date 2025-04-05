@@ -5,7 +5,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "./ui/button";
 
 type goal = {
-    cover_image: string
+    cover_image?: string
     created_at: string
     description: string
     due_date: string

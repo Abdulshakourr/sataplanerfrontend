@@ -27,6 +27,7 @@ interface Goal {
   due_date: string;
   status: string;
   cover_image?: string;
+  created_at: string;
 }
 
 export const Route = createFileRoute(
