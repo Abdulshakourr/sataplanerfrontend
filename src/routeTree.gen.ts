@@ -18,6 +18,8 @@ import { Route as PrivateIndexImport } from './routes/private/index'
 import { Route as LearnIndexImport } from './routes/learn/index'
 import { Route as isAuthenticatedAuthImport } from './routes/(isAuthenticated)/_auth'
 import { Route as QrcodenewViewPlanIndexImport } from './routes/qrcodenew/view-plan/index'
+import { Route as LearnProductivityIndexImport } from './routes/learn/productivity/index'
+import { Route as LearnMotivationIndexImport } from './routes/learn/motivation/index'
 import { Route as authSignUpIndexImport } from './routes/(auth)/sign-up/index'
 import { Route as authSignInIndexImport } from './routes/(auth)/sign-in/index'
 import { Route as isAuthenticatedAuthProfileIndexImport } from './routes/(isAuthenticated)/_auth/profile/index'
@@ -66,6 +68,18 @@ const isAuthenticatedAuthRoute = isAuthenticatedAuthImport.update({
 const QrcodenewViewPlanIndexRoute = QrcodenewViewPlanIndexImport.update({
   id: '/qrcodenew/view-plan/',
   path: '/qrcodenew/view-plan/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LearnProductivityIndexRoute = LearnProductivityIndexImport.update({
+  id: '/learn/productivity/',
+  path: '/learn/productivity/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LearnMotivationIndexRoute = LearnMotivationIndexImport.update({
+  id: '/learn/motivation/',
+  path: '/learn/motivation/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -190,6 +204,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authSignUpIndexImport
       parentRoute: typeof rootRoute
     }
+    '/learn/motivation/': {
+      id: '/learn/motivation/'
+      path: '/learn/motivation'
+      fullPath: '/learn/motivation'
+      preLoaderRoute: typeof LearnMotivationIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/learn/productivity/': {
+      id: '/learn/productivity/'
+      path: '/learn/productivity'
+      fullPath: '/learn/productivity'
+      preLoaderRoute: typeof LearnProductivityIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/qrcodenew/view-plan/': {
       id: '/qrcodenew/view-plan/'
       path: '/qrcodenew/view-plan'
@@ -305,6 +333,8 @@ export interface FileRoutesByFullPath {
   '/private': typeof PrivateIndexRoute
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
+  '/learn/motivation': typeof LearnMotivationIndexRoute
+  '/learn/productivity': typeof LearnProductivityIndexRoute
   '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
   '/edit/$editId': typeof isAuthenticatedAuthEditEditIdRoute
   '/activegoals': typeof isAuthenticatedAuthActivegoalsIndexRoute
@@ -322,6 +352,8 @@ export interface FileRoutesByTo {
   '/private': typeof PrivateIndexRoute
   '/sign-in': typeof authSignInIndexRoute
   '/sign-up': typeof authSignUpIndexRoute
+  '/learn/motivation': typeof LearnMotivationIndexRoute
+  '/learn/productivity': typeof LearnProductivityIndexRoute
   '/qrcodenew/view-plan': typeof QrcodenewViewPlanIndexRoute
   '/edit/$editId': typeof isAuthenticatedAuthEditEditIdRoute
   '/activegoals': typeof isAuthenticatedAuthActivegoalsIndexRoute
@@ -342,6 +374,8 @@ export interface FileRoutesById {
   '/private/': typeof PrivateIndexRoute
   '/(auth)/sign-in/': typeof authSignInIndexRoute
   '/(auth)/sign-up/': typeof authSignUpIndexRoute
+  '/learn/motivation/': typeof LearnMotivationIndexRoute
+  '/learn/productivity/': typeof LearnProductivityIndexRoute
   '/qrcodenew/view-plan/': typeof QrcodenewViewPlanIndexRoute
   '/(isAuthenticated)/_auth/edit/$editId': typeof isAuthenticatedAuthEditEditIdRoute
   '/(isAuthenticated)/_auth/activegoals/': typeof isAuthenticatedAuthActivegoalsIndexRoute
@@ -361,6 +395,8 @@ export interface FileRouteTypes {
     | '/private'
     | '/sign-in'
     | '/sign-up'
+    | '/learn/motivation'
+    | '/learn/productivity'
     | '/qrcodenew/view-plan'
     | '/edit/$editId'
     | '/activegoals'
@@ -377,6 +413,8 @@ export interface FileRouteTypes {
     | '/private'
     | '/sign-in'
     | '/sign-up'
+    | '/learn/motivation'
+    | '/learn/productivity'
     | '/qrcodenew/view-plan'
     | '/edit/$editId'
     | '/activegoals'
@@ -395,6 +433,8 @@ export interface FileRouteTypes {
     | '/private/'
     | '/(auth)/sign-in/'
     | '/(auth)/sign-up/'
+    | '/learn/motivation/'
+    | '/learn/productivity/'
     | '/qrcodenew/view-plan/'
     | '/(isAuthenticated)/_auth/edit/$editId'
     | '/(isAuthenticated)/_auth/activegoals/'
@@ -414,6 +454,8 @@ export interface RootRouteChildren {
   PrivateIndexRoute: typeof PrivateIndexRoute
   authSignInIndexRoute: typeof authSignInIndexRoute
   authSignUpIndexRoute: typeof authSignUpIndexRoute
+  LearnMotivationIndexRoute: typeof LearnMotivationIndexRoute
+  LearnProductivityIndexRoute: typeof LearnProductivityIndexRoute
   QrcodenewViewPlanIndexRoute: typeof QrcodenewViewPlanIndexRoute
 }
 
@@ -424,6 +466,8 @@ const rootRouteChildren: RootRouteChildren = {
   PrivateIndexRoute: PrivateIndexRoute,
   authSignInIndexRoute: authSignInIndexRoute,
   authSignUpIndexRoute: authSignUpIndexRoute,
+  LearnMotivationIndexRoute: LearnMotivationIndexRoute,
+  LearnProductivityIndexRoute: LearnProductivityIndexRoute,
   QrcodenewViewPlanIndexRoute: QrcodenewViewPlanIndexRoute,
 }
 
@@ -443,6 +487,8 @@ export const routeTree = rootRoute
         "/private/",
         "/(auth)/sign-in/",
         "/(auth)/sign-up/",
+        "/learn/motivation/",
+        "/learn/productivity/",
         "/qrcodenew/view-plan/"
       ]
     },
@@ -480,6 +526,12 @@ export const routeTree = rootRoute
     },
     "/(auth)/sign-up/": {
       "filePath": "(auth)/sign-up/index.tsx"
+    },
+    "/learn/motivation/": {
+      "filePath": "learn/motivation/index.tsx"
+    },
+    "/learn/productivity/": {
+      "filePath": "learn/productivity/index.tsx"
     },
     "/qrcodenew/view-plan/": {
       "filePath": "qrcodenew/view-plan/index.tsx"

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle, Clock, Plus, Search, Target } from "lucide-react";
+import { CheckCircle, Clock, Plus, Search, Target, BookOpen, GraduationCap, TrendingUp, Sparkles } from "lucide-react";
 import { useUserGoals } from "@/api/hooks/hook";
 import { motion } from "framer-motion";
 import { useAuthStore } from "@/store/auth";
@@ -84,6 +84,7 @@ function DashboardPage() {
           onOpenChange={setProfileDialogOpen}
         />
         <RecentGoalsSection goals={sortedGoals} loading={isPending} />
+        <LearningResourcesSection />
       </motion.div>
     </div>
   );
@@ -280,6 +281,68 @@ function RecentGoalsSection({
           </div>
         </Card>
       )}
+    </section>
+  );
+}
+
+function LearningResourcesSection() {
+  const resources = [
+    {
+      title: "Goal Setting Guide",
+      description: "Learn how to set effective SMART goals",
+      icon: <Target className="h-5 w-5 text-blue-500" />,
+      link: "/learn",
+    },
+    {
+      title: "Productivity Tips",
+      description: "Boost your productivity with these techniques",
+      icon: <TrendingUp className="h-5 w-5 text-green-500" />,
+      link: "/learn/productivity",
+    },
+    {
+      title: "Motivation Mastery",
+      description: "How to stay motivated long-term",
+      icon: <Sparkles className="h-5 w-5 text-purple-500" />,
+      link: "/learn/motivation",
+    },
+  ];
+
+  return (
+    <section className="mb-12">
+      <div className="flex items-center gap-3 mb-6">
+        <GraduationCap className="h-6 w-6 text-primary" />
+        <h2 className="text-xl font-semibold">Learning Resources</h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {resources.map((resource, index) => (
+          <motion.div
+            key={index}
+            whileHover={{ y: -5 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Link to={resource.link}>
+              <Card className="h-full p-6 hover:border-primary transition-colors">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-full bg-muted">
+                    {resource.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-medium mb-1">{resource.title}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {resource.description}
+                    </p>
+                    <div className="mt-3 text-sm text-primary flex items-center gap-1">
+                      <BookOpen className="h-4 w-4" />
+                      <span>Learn more</span>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
     </section>
   );
 }
