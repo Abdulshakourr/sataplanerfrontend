@@ -11,7 +11,7 @@ import {
 import MotivationForm from "./motivationForm";
 import MotivationCard from "./MotivationCard";
 interface MotivationItem {
-  id: string;
+  id?: string;
   quote?: string;
   link?: string;
   Goal_id: string;
@@ -33,16 +33,19 @@ const MotivationView = ({ data, loads, id }: MotivationProp) => {
         <div className="p-6">
           <div className=" flex justify-between items-center px-6 mb-12">
             <h2 className="text-xl font-semibold">Motivation</h2>
-            <Dialog>
-              <DialogTrigger>
-                <Button>add motivation</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogTitle>add your new motivation</DialogTitle>
-                <DialogDescription>get it done</DialogDescription>
-                <MotivationForm goalId={id} />
-              </DialogContent>
-            </Dialog>
+            {
+              id === "private" ? "" :
+                <Dialog>
+                  <DialogTrigger>
+                    <Button>add motivation</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogTitle>add your new motivation</DialogTitle>
+                    <DialogDescription>get it done</DialogDescription>
+                    <MotivationForm goalId={id} />
+                  </DialogContent>
+                </Dialog>
+            }
           </div>
           {loads ? (
             <div className="space-y-4">

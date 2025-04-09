@@ -1,4 +1,3 @@
-
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Instagram, Quote, Youtube } from 'lucide-react'
 import { Button } from './ui/button'
@@ -13,6 +12,7 @@ interface Motivation {
 // Define props interface correctly
 interface MotivateviewProps {
   motivation: Motivation[];
+  isLoading?: boolean;
 }
 
 

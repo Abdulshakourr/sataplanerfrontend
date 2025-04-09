@@ -1,56 +1,33 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import {
-  ArrowLeft,
   Target,
-  QrCode,
   Calendar,
   Trophy,
   CheckCircle,
   Sparkles,
-  Quote,
-} from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
-import { toast } from '@/hooks/use-toast'
-import { cn } from '@/lib/utils'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Badge } from '@/components/ui/badge'
-import Motivateview from '@/components/privateMotivationView'
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
+} from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import MotivationView from "@/components/MotivationView";
+import { useQuery } from "@tanstack/react-query";
+
 import { z } from "zod"
-import useWindowSize from 'react-use/lib/useWindowSize'
-import Confetti from 'react-confetti'
+import axios from "axios";
 
 const Base_URL = import.meta.env.VITE_BASE_URL
 
-export const Route = createFileRoute('/qrcodenew/view-plan/')({
-  component: RouteComponent,
-  validateSearch: z.object({
-    token: z.string()
-  }),
-})
+function ViewPlan() {
 
-function RouteComponent() {
+
+
   const search = Route.useSearch()
-  const router = useRouter()
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [qrCode, setQrCode] = useState<string | null>(null)
-  const [showCelebration, setShowCelebration] = useState(false)
-  const { width, height } = useWindowSize()
 
-  const { data, isError, isLoading } = useQuery({
+  console.log("Seardch", search)
+
+  const { data: goalData, isSuccess, isError, error, isLoading } = useQuery({
     queryKey: ["private", search.token],
     queryFn: async () => {
       try {
@@ -61,129 +38,43 @@ function RouteComponent() {
       }
     }
   })
+  if (isSuccess) {
+
+    console.log("data", goalData)
+  }
+
+  const data = goalData?.goal_details
+
+
+
+
+  const isAchieved = data?.status === "ACHIEVED";
+  const isOverdue = data?.status === "ACTIVE" && new Date(data?.due_date) < new Date();
+  const daysRemaining = data?.due_date
+    ? Math.ceil((new Date(data.due_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : 0;
+
 
   if (isError) {
-    router.navigate({ to: "/sign-in" })
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-medium">Goal Not Found</h1>
+          <p className="text-muted-foreground">
+            The goal you're looking for doesn't exist
+          </p>
+          <p className="text-red-600">{error.message}</p>
+          <Button asChild>
+            <Link to="/dashboard">Back to Dashboard</Link>
+          </Button>
+        </div>
+      </div>
+    );
   }
-
-  const isAchieved = data?.goal_details?.status === "ACHIEVED"
-  const isOverdue = data?.goal_details?.status === "ACTIVE" &&
-    new Date(data?.goal_details?.due_date) < new Date()
-  const daysRemaining = data?.goal_details?.due_date
-    ? Math.ceil((new Date(data.goal_details.due_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-    : 0
-
-  const generateQr = async () => {
-    setLoading(true)
-    try {
-      const response = await axios.get(
-        `${Base_URL}/qrcode/generate-permanent-qr/${data.goal_details.id}`,
-        { responseType: 'blob' }
-      )
-      const url = URL.createObjectURL(response.data)
-      setQrCode(url)
-      toast({
-        title: "QR Code Generated",
-        description: "Share this goal with others using the QR code",
-      })
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to generate QR code",
-        variant: "destructive",
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const downloadQrCode = () => {
-    if (!qrCode) return
-    const link = document.createElement('a')
-    link.href = qrCode
-    link.download = `goal-${data.goal_details.id}-qrcode.png`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-
-  useEffect(() => {
-    if (isAchieved) {
-      setShowCelebration(true)
-      setTimeout(() => setShowCelebration(false), 5000)
-    }
-  }, [isAchieved])
 
   return (
     <div className="min-h-screen bg-slate-50 relative overflow-hidden">
-      {/* Celebration Effects */}
-      <AnimatePresence>
-        {showCelebration && (
-          <>
-            <Confetti
-              width={width}
-              height={height}
-              recycle={false}
-              numberOfPieces={500}
-              gravity={0.2}
-              colors={['#FFD700', '#FFA500', '#FF8C00', '#FF6347']}
-            />
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-yellow-50/50 z-40 pointer-events-none"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
-            >
-              <div className="text-center p-8 bg-white/90 rounded-xl shadow-xl border border-yellow-200">
-                <motion.div
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: "reverse"
-                  }}
-                >
-                  <Trophy className="h-24 w-24 text-yellow-500 mx-auto mb-6" />
-                </motion.div>
-                <motion.h2
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-4xl font-bold text-yellow-600 mb-4"
-                >
-                  Congratulations!
-                </motion.h2>
-                <motion.p
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="text-xl text-yellow-700 mb-6"
-                >
-                  This goal has been achieved!
-                </motion.p>
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.7 }}
-                  className="text-4xl"
-                >
-                  🎉🥳🏆
-                </motion.div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+
 
       <div className="max-w-5xl mx-auto px-4 py-8">
         <motion.div
@@ -192,6 +83,10 @@ function RouteComponent() {
           transition={{ duration: 0.3 }}
           className="space-y-8"
         >
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row gap-y-4 sm:gap-y-0 items-center justify-between">
+
+          </div>
 
           {/* Content Container */}
           <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-slate-200">
@@ -200,13 +95,13 @@ function RouteComponent() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
-                    {isLoading ? <Skeleton className="h-9 w-64" /> : data?.goal_details.name}
+                    {isLoading ? <Skeleton className="h-9 w-64" /> : data?.name}
                     {isAchieved && (
                       <span className="ml-2 text-yellow-500">🏆</span>
                     )}
                   </h1>
 
-                  {data?.goal_details?.status === "ACTIVE" && data?.goal_details?.due_date && (
+                  {data?.status === "ACTIVE" && data?.due_date && (
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="h-4 w-4 text-slate-500" />
                       <span
@@ -222,7 +117,7 @@ function RouteComponent() {
                       <span className="text-slate-400">•</span>
                       <span className="text-slate-500">
                         Due{" "}
-                        {new Date(data.goal_details.due_date).toLocaleDateString("en-US", {
+                        {new Date(data.due_date).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
@@ -237,7 +132,7 @@ function RouteComponent() {
                   className={cn(
                     "text-sm px-3 py-1 font-medium relative overflow-hidden",
                     isOverdue && "bg-red-100 text-red-600 hover:bg-red-200",
-                    data?.goal_details?.status === "ACTIVE" &&
+                    data?.status === "ACTIVE" &&
                     !isOverdue &&
                     "bg-green-100 text-green-700 hover:bg-green-200",
                     isAchieved && "bg-yellow-100 text-yellow-700 hover:bg-yellow-200",
@@ -261,7 +156,7 @@ function RouteComponent() {
                       <Sparkles className="h-4 w-4 text-yellow-400" />
                     </motion.span>
                   )}
-                  {data?.goal_details?.status}
+                  {data?.status}
                   {isAchieved && " 🎯"}
                 </Badge>
               </div>
@@ -272,11 +167,11 @@ function RouteComponent() {
               <div className="md:col-span-2 border-r border-slate-100">
                 {/* Cover Image */}
                 <div className="aspect-video bg-slate-100 overflow-hidden relative">
-                  {data?.goal_details?.cover_image ? (
+                  {data?.cover_image ? (
                     <>
                       <img
-                        src={data.goal_details.cover_image}
-                        alt={data.goal_details.name}
+                        src={data.cover_image}
+                        alt={data.name}
                         className="w-full h-full object-cover"
                       />
                       {isAchieved && (
@@ -334,7 +229,7 @@ function RouteComponent() {
                       </div>
                     ) : (
                       <p className="text-slate-600 leading-relaxed">
-                        {data?.goal_details?.description || "No description available"}
+                        {data?.description || "No description available"}
                       </p>
                     )}
                   </div>
@@ -342,13 +237,11 @@ function RouteComponent() {
                   {/* Motivation Section */}
                   {!isAchieved ? (
                     <div className="mb-6">
-                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4 mb-4">
-                        <div className="bg-teal-100 p-2 rounded-full">
-                          <Quote className="h-5 w-5 text-teal-600" />
-                        </div>
-                        <h2 className="text-xl font-semibold text-slate-800">Motivations</h2>
-                      </div>
-                      <Motivateview motivation={data?.goal_details?.motivations} isLoading={isLoading} />
+                      <MotivationView
+                        data={isLoading ? undefined : data.motivations}
+                        id="private"
+                        loads={isLoading}
+                      />
                     </div>
                   ) : (
                     <motion.div
@@ -400,11 +293,11 @@ function RouteComponent() {
                           </motion.div>
                         </div>
                         <h3 className="text-2xl font-bold text-yellow-800 mb-2">
-                          Goal Achieved!
+                          You Did It!
                         </h3>
                         <p className="text-yellow-700 mb-4 text-lg">
-                          Completed on {" "}
-                          {new Date(data?.goal_details?.updated_at || data?.goal_details?.created_at).toLocaleDateString("en-US", {
+                          Goal completed on {" "}
+                          {new Date(data?.updated_at || data?.created_at).toLocaleDateString("en-US", {
                             month: "long",
                             day: "numeric",
                             year: "numeric",
@@ -456,15 +349,16 @@ function RouteComponent() {
                               variant={isAchieved ? "secondary" : "default"}
                               className={cn(
                                 "text-xs px-2 py-0",
-                                isOverdue && "bg-red-100 text-red-600 hover:bg-red-200",
-                                data?.goal_details?.status === "ACTIVE" &&
+                                isOverdue &&
+                                "bg-red-100 text-red-600 hover:bg-red-200",
+                                data?.status === "ACTIVE" &&
                                 !isOverdue &&
                                 "bg-green-100 text-green-700 hover:bg-green-200",
                                 isAchieved &&
                                 "bg-yellow-100 text-yellow-700 hover:bg-yellow-200",
                               )}
                             >
-                              {data?.goal_details?.status}
+                              {data?.status}
                             </Badge>
                           </div>
                         </div>
@@ -475,8 +369,8 @@ function RouteComponent() {
                               Created
                             </span>
                             <span className="text-sm font-medium text-slate-700">
-                              {data?.goal_details?.created_at
-                                ? new Date(data.goal_details.created_at).toLocaleDateString(
+                              {data?.created_at
+                                ? new Date(data.created_at).toLocaleDateString(
                                   "en-US",
                                   {
                                     month: "short",
@@ -489,7 +383,7 @@ function RouteComponent() {
                           </div>
                         </div>
 
-                        {data?.goal_details?.due_date && (
+                        {data?.due_date && (
                           <div className="p-4">
                             <div className="flex items-center justify-between">
                               <span className="text-sm text-slate-500 font-medium">
@@ -501,7 +395,7 @@ function RouteComponent() {
                                   isOverdue ? "text-red-500" : "text-slate-700",
                                 )}
                               >
-                                {new Date(data.goal_details.due_date).toLocaleDateString(
+                                {new Date(data.due_date).toLocaleDateString(
                                   "en-US",
                                   {
                                     month: "short",
@@ -516,16 +410,6 @@ function RouteComponent() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Action Buttons */}
-                  {isAchieved && (
-                    <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-100 text-center">
-                      <p className="text-yellow-700 font-medium flex items-center justify-center">
-                        <CheckCircle className="h-5 w-5 mr-2" />
-                        Completed Successfully
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -533,5 +417,13 @@ function RouteComponent() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }
+
+export const Route = createFileRoute('/qrcodenew/view-plan/')({
+  component: ViewPlan,
+  validateSearch: z.object({
+    token: z.string()
+  }),
+});
+
