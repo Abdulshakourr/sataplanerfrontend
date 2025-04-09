@@ -226,7 +226,7 @@ export const client = {
   //motivations
 
   async createMotivation(
-    data: { link: string | undefined; quote: string | undefined },
+    data: { link?: string; quote?: string },
     id: string,
   ) {
     try {

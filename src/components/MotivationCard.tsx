@@ -27,11 +27,12 @@ export default function MotivationCard({ data }: MotivationCardProps) {
   const handleDelete = () => {
     deleteMotivation(data.id, {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["goals", "motivation", data.Goal_id] });
-        toast.success("Motivation deleted successfully");
+        queryClient.invalidateQueries({ queryKey: ["goals", "motivation", data.Goal_id] })
+        // queryClient.invalidatequeries({ querykey: ["goals", "motivation", data.goal_id] });
+        toast.success("motivation deleted successfully");
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete motivation");
+        toast.error(error.message || "failed to delete motivation");
       }
     });
   };

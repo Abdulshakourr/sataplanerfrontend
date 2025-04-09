@@ -108,8 +108,8 @@ export const useGetMotivation = (id: string) =>
 export const useCreateMotivation = (id: string) =>
   useMutation({
     mutationFn: (data: {
-      link: string | undefined;
-      quote: string | undefined;
+      link?: string;
+      quote?: string;
     }) => client.createMotivation(data, id),
   });
 

@@ -11,9 +11,9 @@ import {
 import MotivationForm from "./motivationForm";
 import MotivationCard from "./MotivationCard";
 interface MotivationItem {
-  id?: string;
-  quote?: string;
-  link?: string;
+  id: string;
+  quote: string;
+  link: string;
   Goal_id: string;
 }
 
