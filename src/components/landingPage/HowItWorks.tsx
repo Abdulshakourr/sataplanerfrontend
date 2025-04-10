@@ -4,56 +4,51 @@ import {
   UserPlus,
   Target,
   Sparkles,
-  LineChart,
   QrCode,
-  User,
+  Eye,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AnimatedText from "../ui/AnimatedText";
 
+
 const steps = [
   {
-    title: "Start Your Journey",
-    description:
-      "Create your free account in just a few clicks. We keep your information secure, so you can focus on what matters—your goals.",
-    icon: <UserPlus size={24} />,
-    color: "from-blue-400 to-cyan-400",
+    title: "Create Account",
+    description: "Sign up in seconds with email or social login. Your data stays private and secure from day one.",
+    icon: <UserPlus className="w-6 h-6" />,
+    color: "bg-blue-100 text-blue-600"
   },
   {
-    title: "Craft Your Goals",
-    description:
-      "Set clear, achievable goals with goal, why you want to achieve it, and deadlines. Add a personal touch with a cover image that inspires you.",
-    icon: <Target size={24} />,
-    color: "from-indigo-400 to-purple-400",
+    title: "Set Clear Goal",
+    description: "Define exactly what you want to achieve with our simple goal-setting framework.",
+    icon: <Target className="w-6 h-6" />,
+    color: "bg-purple-100 text-purple-600"
   },
   {
-    title: "Stay Motivated",
-    description:
-      "Attach uplifting quotes or helpful links to your goals. Let these be your daily reminder of why you started.",
-    icon: <Sparkles size={24} />,
-    color: "from-yellow-400 to-orange-400",
+    title: "Attach Motivation",
+    description: "Add inspirational quotes, videos or personal notes to fuel your journey.",
+    icon: <Sparkles className="w-6 h-6" />,
+    color: "bg-yellow-100 text-yellow-600"
   },
   {
-    title: "Track Every Step",
-    description:
-      "Update your progress and see how far you've come. Our app makes it easy to stay on track and celebrate your wins.",
-    icon: <LineChart size={24} />,
-    color: "from-green-400 to-emerald-400",
+    title: "Print Secure QR Code",
+    description: "Generate a private QR code that only unlocks with your device - no accidental peeking.",
+    icon: <QrCode className="w-6 h-6" />,
+    color: "bg-green-100 text-green-600"
   },
   {
-    title: "Share Securely",
-    description:
-      "Want to share your goal with others? Generate a unique QR code that you control. Only those you trust can view your progress.",
-    icon: <QrCode size={24} />,
-    color: "from-red-400 to-pink-400",
+    title: "Pin to Your Wall",
+    description: "Place your QR code where you'll see it daily - mirror, fridge, or workspace.",
+    icon: <Eye className="w-6 h-6" />,
+    color: "bg-orange-100 text-orange-600"
   },
   {
-    title: "Personalize Your Space",
-    description:
-      "Make the app your own by adding your name and bio to your profile. This is your goal-setting sanctuary.",
-    icon: <User size={24} />,
-    color: "from-purple-400 to-indigo-400",
-  },
+    title: "Get Daily Boost",
+    description: "Scan each morning to reveal your goals and motivational content.",
+    icon: <Zap className="w-6 h-6" />,
+    color: "bg-pink-100 text-pink-600"
+  }
 ];
 
 const HowItWorks: React.FC = () => {

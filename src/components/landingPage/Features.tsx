@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Target, Sparkles, LineChart, QrCode, Settings } from "lucide-react";
+import { Sparkles, QrCode, Layout, EyeOff, Printer, Mic, Lock } from "lucide-react";
 import AnimatedText from "../ui/AnimatedText";
 
 interface FeatureCardProps {
@@ -48,35 +48,47 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 const Features: React.FC = () => {
   const features = [
     {
-      title: "Effortless Goal Setting",
-      description:
-        "Create and organize your goals with our user-friendly interface. Break them down into manageable steps and set deadlines to keep yourself accountable.",
-      icon: <Target size={24} />,
+      title: "Encrypted Goal Storage",
+      description: "Your dreams, your secret. Every goal you enter is encrypted and stored securely—only you can access it through your unique QR code.",
+      icon: <Lock className="w-6 h-6" />,
+      color: "bg-purple-100 text-purple-600"
     },
     {
-      title: "Daily Motivation",
-      description:
-        "Get inspired with handpicked quotes, tips, and success stories delivered right to your app. Stay focused and energized on your journey.",
-      icon: <Sparkles size={24} />,
+      title: "QR Code Generator",
+      description: "Turn goals into silent symbols. Convert your private mission into a discreet QR code you can print and pin anywhere, without revealing your goal to others.",
+      icon: <QrCode className="w-6 h-6" />,
+      color: "bg-blue-100 text-blue-600"
     },
     {
-      title: "Progress Tracking",
-      description:
-        "Visualize your achievements with intuitive charts and milestones. Celebrate your wins, no matter how small, and stay motivated to keep going.",
-      icon: <LineChart size={24} />,
+      title: "Multimedia Goal Entries",
+      description: "Write it. Record it. Feel it. Attach videos, voice notes, or detailed notes to your goals—remind yourself why you started, your way.",
+      icon: <Mic className="w-6 h-6" />,
+      color: "bg-pink-100 text-pink-600"
     },
     {
-      title: "Secure Sharing",
-      description:
-        "Share your goals with friends and family via unique QR codes. Get the support and encouragement you need to succeed.",
-      icon: <QrCode size={24} />,
+      title: "Offline QR Print Option",
+      description: "No internet, no problem. Once generated, your QR code can be printed and accessed offline—perfect for low-privacy spaces or limited connectivity.",
+      icon: <Printer className="w-6 h-6" />,
+      color: "bg-green-100 text-green-600"
     },
     {
-      title: "Personalized Experience",
-      description:
-        "Customize your profile and app settings to make GOALSET truly yours. Tailor your goal-setting journey to fit your unique needs.",
-      icon: <Settings size={24} />,
+      title: "Personal Vault Access",
+      description: "Only for your eyes. Scan your QR code with the app to reveal your full dream: your mission, your message, your motivation.",
+      icon: <EyeOff className="w-6 h-6" />,
+      color: "bg-yellow-100 text-yellow-600"
     },
+    {
+      title: "Silent Mode Goals",
+      description: "Move in silence. Stay focused. No pop-ups, no social feed, no distractions—just you and your goals, quietly driving progress.",
+      icon: <Layout className="w-6 h-6" />,
+      color: "bg-indigo-100 text-indigo-600"
+    },
+    {
+      title: "Minimalist & Private Design",
+      description: "Designed for focus and protection. A distraction-free interface that respects your space and keeps your dreams yours.",
+      icon: <Sparkles className="w-6 h-6" />,
+      color: "bg-teal-100 text-teal-600"
+    }
   ];
 
   return (

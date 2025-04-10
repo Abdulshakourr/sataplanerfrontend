@@ -8,7 +8,7 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ArrowLeft, Calendar, Target, Upload } from "lucide-react";
+import { AlertCircle, ArrowLeft, Calendar, Target, Upload } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 
@@ -66,6 +66,7 @@ export default function GoalFormPage() {
   const router = useRouter();
   const [cover_image, setCover_image] = useState<File | null>(null)
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
   const queryClient = useQueryClient()
   const onSucess = () => {
     queryClient.invalidateQueries({ queryKey: ["goals"] })
@@ -83,7 +84,10 @@ export default function GoalFormPage() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!cover_image) return;
-
+    if (cover_image.size > 1024 * 1024) { // 1MB in bytes
+      setImageError("Image should be less than 1MB");
+      return;
+    }
     const formData = new FormData();
     formData.append('name', values.name);
     formData.append('description', values.description);
@@ -116,8 +120,8 @@ export default function GoalFormPage() {
     const file = e.target.files?.[0];
     if (file) {
       setCover_image(file)
+      console.log("ss", file)
       const reader = new FileReader();
-      console.log("fl", reader)
       reader.onloadend = () => {
         setPreviewImage(reader.result as string);
       };
@@ -246,6 +250,7 @@ export default function GoalFormPage() {
                     previewImage
                       ? "border-primary/20"
                       : "border-border hover:border-primary/40",
+                    imageError && "border-destructive/30" // Add red border when error
                   )}
                 >
                   {previewImage ? (
@@ -259,7 +264,11 @@ export default function GoalFormPage() {
                         variant="ghost"
                         size="sm"
                         className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm"
-                        onClick={() => setPreviewImage(null)}
+                        onClick={() => {
+                          setPreviewImage(null);
+                          setCover_image(null);
+                          setImageError(null);
+                        }}
                       >
                         Change
                       </Button>
@@ -267,15 +276,21 @@ export default function GoalFormPage() {
                   ) : (
                     <>
                       <div className="flex flex-col items-center justify-center gap-3">
-                        <div className="p-4 rounded-full bg-primary/10">
-                          <Upload className="h-6 w-6 text-primary" />
+                        <div className={cn(
+                          "p-4 rounded-full",
+                          imageError ? "bg-destructive/10" : "bg-primary/10"
+                        )}>
+                          <Upload className={cn(
+                            "h-6 w-6",
+                            imageError ? "text-destructive" : "text-primary"
+                          )} />
                         </div>
                         <div>
                           <p className="text-sm font-medium text-foreground">
                             Drag and drop an image here
                           </p>
                           <p className="text-xs text-muted-foreground mt-1">
-                            or click to browse files (max 5MB)
+                            or click to browse files (max 1MB)
                           </p>
                         </div>
                       </div>
@@ -289,6 +304,12 @@ export default function GoalFormPage() {
                     onChange={handleImageChange}
                   />
                 </div>
+                {imageError && (
+                  <div className="flex items-center gap-2 mt-2 text-destructive text-sm">
+                    <AlertCircle className="h-4 w-4" />
+                    <span>{imageError}</span>
+                  </div>
+                )}
               </div>
             </div>
 
