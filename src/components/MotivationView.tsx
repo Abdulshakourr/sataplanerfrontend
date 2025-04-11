@@ -14,7 +14,7 @@ interface MotivationItem {
   id: string;
   quote: string;
   link: string;
-  Goal_id: string;
+  goal_id: string;
 }
 
 interface MotivationProp {
