@@ -11,7 +11,7 @@ interface MotivationItem {
   id: string;
   quote?: string;
   link?: string;
-  Goal_id: string;
+  goal_id: string;
 }
 
 interface MotivationCardProps {
@@ -23,12 +23,10 @@ export default function MotivationCard({ data }: MotivationCardProps) {
   const { mutate: deleteMotivation, isPending } = useDeleteMotivation();
   const hasQuote = !!data?.quote;
   const hasVideo = !!data?.link;
-
   const handleDelete = () => {
     deleteMotivation(data.id, {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["goals", "motivation", data.Goal_id] })
-        // queryClient.invalidatequeries({ querykey: ["goals", "motivation", data.goal_id] });
+        queryClient.invalidateQueries({ queryKey: ["goals", "motivation", data.goal_id] })
         toast.success("motivation deleted successfully");
       },
       onError: (error) => {
@@ -38,7 +36,7 @@ export default function MotivationCard({ data }: MotivationCardProps) {
   };
 
   return (
-    <div className="space-y-6 relative group">
+    <div className="space-y- relative group">
       {/* Delete Button - Only shows on hover */}
       <Button
         variant="ghost"
