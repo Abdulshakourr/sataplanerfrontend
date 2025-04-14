@@ -8,17 +8,19 @@ import {
 } from "./ui/sheet";
 import { cn } from "@/lib/utils";
 import MobileNav from "./dashboarComponents/MobileNav";
+import { Link } from "@tanstack/react-router";
 
 export default function Navbar() {
   return (
     <nav
       className={cn(
-        " sm:hidden sticky top-0 z-50 py-3 px-4 border-b backdrop-blur-lg transition-all duration-300",
+        " md:hidden sticky top-0 z-50 py-3 px-4 border-b backdrop-blur-lg transition-all duration-300",
       )}
     >
-      <div className="flex items-center justify-end ">
+      <div className="flex items-center justify-between ">
         {/* Mobile Navigation */}
-        <div className="sm:hidden">
+        <Link to="/dashboard"><h1 className="uppercase font-bold text-goal-900 text-xl">goalset</h1></Link>
+        <div className="md:hidden">
           <Sheet>
             <SheetTrigger asChild>
               <MenuIcon className="h-8 w-8 cursor-pointer" />

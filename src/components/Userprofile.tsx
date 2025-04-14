@@ -30,7 +30,7 @@ const formSchema = z.object({
 });
 
 export default function ProfileForm() {
-    const { user, setUser } = useAuthStore();
+    const { user, setUser, access_token } = useAuthStore();
     const [loading, setLoading] = useState(false);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -49,13 +49,15 @@ export default function ProfileForm() {
             // Log the payload for debugging
             console.log("Submitting profile update:", values);
 
-            const updatedUser = await client.updateUserProfile({
+            const updateduser = await client.updateUserProfile({
                 firstname: values.firstname,
                 lastname: values.lastname,
                 bio: values.bio
             });
 
-            setUser(updatedUser);
+            if (access_token && updateduser) {
+                client.getUserProfile(access_token).then((data) => console.log("URR", setUser(data)))
+            }
 
             toast({
                 title: "Success!",
